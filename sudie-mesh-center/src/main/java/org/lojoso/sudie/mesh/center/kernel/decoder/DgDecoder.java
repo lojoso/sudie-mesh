@@ -19,7 +19,6 @@ public class DgDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> list) {
         byte[] payload = ByteBufUtil.getBytes(in);
         List<Dg> dgs = analysis(payload, ctx.channel().id(), new ArrayList<>());
-
         // 传递list
         list.add(dgs);
         // 跳过已读
@@ -35,10 +34,10 @@ public class DgDecoder extends ByteToMessageDecoder {
     private List<Dg> scatterPayload(byte[] payload, List<Dg> result, ChannelId id) {
         for (int i = 0; i < payload.length; i++) {
             if (Arrays.equals(DgTools.HEAD, Arrays.copyOfRange(payload, i, i + 1))) {
-                if (i != 0) {
+                if (i != 0 && result.size() == 0) {
                     result.add(new Dg(id, Arrays.copyOfRange(payload, 0, i)));
                 }
-                i = generateDatagram(payload, result, i, id);
+                i = generateDatagram(payload, result, i, id)-1;
             }
         }
         return result;
@@ -55,7 +54,7 @@ public class DgDecoder extends ByteToMessageDecoder {
         // 1 == crc.length
         byte[] crc = Arrays.copyOfRange(payload, i + 1 + 1 + 2, i + 1 + 1 + 2 + 1);
         byte[] body = Arrays.copyOfRange(payload, i + 1 + 1 + 2 + 1, Math.min(i + 1 + 1 + 2 + 1 + DgTools.toShort(length), payload.length));
-        isBroken = isBroken && Arrays.equals(DgTools.crcCheck(body), crc);
+        isBroken = isBroken || (!Arrays.equals(DgTools.crcCheck(body), crc));
 
         result.add(new Dg(id, isBroken, head, afn, length, crc, body));
         return isBroken ? payload.length : i + 1 + 1 + 2 + 1 + DgTools.toShort(length);

@@ -15,15 +15,16 @@ import static io.netty.handler.timeout.IdleState.READER_IDLE;
 
 public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
 
+    private String server;
     private ConcurrentHashMap<ChannelId, String> clusters;
     // 心跳标志
     private final AtomicBoolean inActive = new AtomicBoolean(false);
 
     public DiscardClientHandler(){
-
     }
 
-    public DiscardClientHandler(ConcurrentHashMap<ChannelId, String> clusters){
+    public DiscardClientHandler(String server, ConcurrentHashMap<ChannelId, String> clusters){
+        this.server = server;
         this.clusters = clusters;
     }
 
@@ -39,6 +40,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        Cluster.clusterMapping.putIfAbsent(server, ctx.channel());
         ctx.fireChannelActive();
     }
 

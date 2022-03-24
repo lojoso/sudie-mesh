@@ -19,18 +19,16 @@ public class SudieAIOClient {
     public SudieBaseConfig config;
     // Channel缓存
     public final ConcurrentHashMap<ChannelId, String> clusters = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, SocketChannel> clusterMapping = new ConcurrentHashMap<>();
     // 连接重试状态
     private final ConcurrentHashMap<String, Integer> retrys = new ConcurrentHashMap<>();
-
     private final ConcurrentHashMap<String, Runnable> cacheScripts = new ConcurrentHashMap<>();
     private final Thread.UncaughtExceptionHandler defaultHandler = (t, e) -> {
         t.interrupt();
         retrys.compute(t.getName(), (k, v) -> Optional.ofNullable(v).map(i -> ++i).orElse(1));
         if(retrys.get(t.getName()) > config.getRetry()){
-            System.out.printf("cannot connect to server :%s failed\n", t.getName());
+//            System.out.printf("cannot connect to server :%s failed\n", t.getName());
         }else {
-            System.out.printf("cannot connect to server :%s retry: %s/%s \n", t.getName(), retrys.get(t.getName()), config.getRetry());
+//            System.out.printf("cannot connect to server :%s retry: %s/%s \n", t.getName(), retrys.get(t.getName()), config.getRetry());
             this.startConnect(t.getName(), cacheScripts.get(t.getName()));
         }
     };
@@ -69,9 +67,8 @@ public class SudieAIOClient {
                         @Override
                         protected void initChannel(SocketChannel ch) {
                             clusters.putIfAbsent(ch.id(), server);
-                            clusterMapping.putIfAbsent(server, ch);
-                            ch.pipeline().addLast(new DgDecoder()).addLast(new IdleStateHandler(5, 0, 0, TimeUnit.SECONDS))
-                                    .addLast(new DiscardClientHandler(clusters));
+                            ch.pipeline().addLast(new DgDecoder()).addLast(new IdleStateHandler(1, 0, 0, TimeUnit.MINUTES))
+                                    .addLast(new DiscardClientHandler(server, clusters));
                         }
                     });
             ChannelFuture future = bootstrap.connect(host, port).sync();

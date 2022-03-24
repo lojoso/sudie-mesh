@@ -3,6 +3,10 @@ package org.lojoso.sudie.mesh.center.kernel.model;
 import io.netty.channel.ChannelId;
 import org.apache.commons.codec.binary.Hex;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Objects;
+
 public class Dg {
 
     private ChannelId id;
@@ -92,6 +96,17 @@ public class Dg {
 
     public void setBody(byte[] body) {
         this.body = body;
+    }
+
+    public byte[] combine(byte[] change){
+        ByteBuffer buffer =
+                ByteBuffer.allocate(head.length + afn.length + length.length + crc.length + body.length);
+        buffer.put(head);
+        buffer.put(Objects.isNull(change) ? afn: change);
+        buffer.put(length);
+        buffer.put(crc);
+        buffer.put(body);
+        return buffer.array();
     }
 
     @Override

@@ -8,46 +8,43 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import org.lojoso.sudie.mesh.center.kernel.model.Dg;
+import org.lojoso.sudie.mesh.center.kernel.server.strategy.DgStrategy;
 import org.lojoso.sudie.mesh.center.utils.DgTools;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.ServiceLoader;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static io.netty.handler.timeout.IdleState.READER_IDLE;
 
 public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
 
-
     public DiscardServerHandler(){
-
     }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         // 通道绑定
         ctx.fireChannelRegistered();
-        System.out.println("1");
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         // 通道解绑
         ctx.fireChannelUnregistered();
-        System.out.println("2");
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // 通道初始化
         ctx.fireChannelActive();
-        System.out.println("3");
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         // 通道销毁
         ctx.fireChannelInactive();
-        System.out.println("4");
     }
 
     @Override
@@ -56,8 +53,8 @@ public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
         try {
             // ByteBufUtil, Unpooled
             List<Dg> data = (List<Dg>) msg;
-            ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(DgTools.toHeartbeat()));
-        }finally {
+            ServiceLoader.load(DgStrategy.class).forEach(e -> e.apply(data, ctx.channel()));
+        } finally {
             ReferenceCountUtil.release(msg);
         }
     }

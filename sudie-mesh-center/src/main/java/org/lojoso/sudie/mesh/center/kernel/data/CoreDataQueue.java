@@ -1,20 +1,30 @@
 package org.lojoso.sudie.mesh.center.kernel.data;
 
+import org.lojoso.sudie.mesh.center.kernel.model.Dg;
+
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-// 请求数据核心
+// 请求核心队列
 public class CoreDataQueue {
 
-    private static ConcurrentLinkedDeque<String> dQueue = new ConcurrentLinkedDeque<>();
+    private static final ConcurrentLinkedDeque<Dg> dQueue = new ConcurrentLinkedDeque<>();
 
-    public void addRequest(String data) {
+    public static int count(){
+        return dQueue.size();
+    }
+
+    public static void addRequest(Dg data) {
         dQueue.add(data);
     }
 
-    public List<String> getRequest(int size) {
+    public static void batchAddRequest(List<Dg> data) {
+        dQueue.addAll(data);
+    }
+
+    public static List<Dg> getRequest(int size) {
         return IntStream.range(0, size).boxed().map(e -> dQueue.remove()).collect(Collectors.toList());
     }
 }

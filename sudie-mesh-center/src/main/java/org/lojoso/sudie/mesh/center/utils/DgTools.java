@@ -11,8 +11,17 @@ import java.util.stream.IntStream;
 public class DgTools {
 
     public static byte[] HEAD = { 0x68 };
-    public static byte HB_AFN = (byte) 0x00;
+    // 心跳
+    public static byte[] HB_AFN = { 0x00 };
     public static byte[] HB_LEN = { 0x00, 0x09 };
+
+    // 客户端
+    public static byte[] CD_AFN = { 0x01 };
+    // 服务端 均衡拉取
+    public static byte[] SD_AFN_PULL = { 0x11 };
+    // 服务端 均衡入队列
+    public static byte[] SD_AFN_PUSH = { 0x12 };
+
 
     // 无符号
     public static int toShort(byte[] bytes){
