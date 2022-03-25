@@ -15,4 +15,8 @@ public class Cluster {
         return clusterMapping.get(key);
     }
 
+    public static void flush(){
+        clusterMapping.values().forEach(Channel::flush);
+    }
+
 }

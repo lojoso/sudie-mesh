@@ -2,6 +2,7 @@ package org.lojoso.sudie.mesh.center.kernel.server.strategy;
 
 import io.netty.channel.Channel;
 import org.apache.commons.collections4.CollectionUtils;
+import org.lojoso.sudie.mesh.center.kernel.consumer.DataConsumer;
 import org.lojoso.sudie.mesh.center.kernel.data.CoreDataQueue;
 import org.lojoso.sudie.mesh.center.kernel.model.Dg;
 import org.lojoso.sudie.mesh.center.utils.DgTools;
@@ -26,5 +27,6 @@ public class ServerPushStrategy implements DgStrategy{
         // todo:触发处理机制
         CoreDataQueue.batchAddRequest(target);
         System.out.printf("current queue size: %s\n", CoreDataQueue.count());
+        DataConsumer.requestProcess();
     }
 }

@@ -25,6 +25,6 @@ public class CoreDataQueue {
     }
 
     public static List<Dg> getRequest(int size) {
-        return IntStream.range(0, size).boxed().map(e -> dQueue.remove()).collect(Collectors.toList());
+        return IntStream.range(0, Math.min(dQueue.size(), size)).boxed().map(e -> dQueue.remove()).collect(Collectors.toList());
     }
 }

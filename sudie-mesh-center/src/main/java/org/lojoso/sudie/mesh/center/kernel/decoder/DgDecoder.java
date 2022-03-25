@@ -11,6 +11,7 @@ import org.lojoso.sudie.mesh.center.utils.DgTools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class DgDecoder extends ByteToMessageDecoder {
 
@@ -44,6 +45,17 @@ public class DgDecoder extends ByteToMessageDecoder {
     }
 
     private int generateDatagram(byte[] payload, List<Dg> result, int i, ChannelId id) {
+
+        return Optional.of(payload).filter(d -> d.length >= i + 1 + 1 + 2 + 1).map(d -> this.normalDatagram(payload,result,i,id))
+                .orElseGet(() -> this.brokenDatagram(payload, result, i, id));
+    }
+
+    private int brokenDatagram(byte[] payload, List<Dg> result, int i, ChannelId id){
+        result.add(new Dg(id, Arrays.copyOfRange(payload, i, payload.length)));
+        return payload.length;
+    }
+
+    private int normalDatagram(byte[] payload, List<Dg> result, int i, ChannelId id){
 
         byte[] head = Arrays.copyOfRange(payload, i, i + 1);
         // 1 == AFN.length

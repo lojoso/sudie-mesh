@@ -26,6 +26,7 @@ public class ClientStrategy implements DgStrategy{
 
     @Override
     public void doEncode(Channel channel) {
-        target.forEach((e) -> Cluster.randomChannel().writeAndFlush(Unpooled.wrappedBuffer(e.combine(DgTools.SD_AFN_PUSH))));
+        target.forEach((e) -> Cluster.randomChannel().write(Unpooled.wrappedBuffer(e.combine(DgTools.SD_AFN_PUSH))));
+        Cluster.flush();
     }
 }

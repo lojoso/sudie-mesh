@@ -41,7 +41,7 @@ public class SudieAIOServer {
                             ch.pipeline().addLast(new DgDecoder()).addLast(new DiscardServerHandler());
                         }
                     })
-                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .option(ChannelOption.SO_BACKLOG, 2048)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture f = b.bind(config.getPort()).sync();
             f.addListener(future -> this.startCluster(config));
