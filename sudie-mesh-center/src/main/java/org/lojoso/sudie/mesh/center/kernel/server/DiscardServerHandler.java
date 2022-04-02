@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static io.netty.handler.timeout.IdleState.READER_IDLE;
@@ -58,7 +59,8 @@ public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
             // ByteBufUtil, Unpooled
             List<Dg> data = (List<Dg>) msg;
             data.addAll(brokens.combineDg(data.stream().filter(Dg::getBroken).collect(Collectors.toList()), ctx.channel().id()));
-            ServiceLoader.load(DgStrategy.class).forEach(e -> e.apply(data, ctx.channel()));
+            List<Dg> complete = data.stream().filter(((Predicate<Dg>) Dg::getBroken).negate()).collect(Collectors.toList());
+            ServiceLoader.load(DgStrategy.class).forEach(e -> e.apply(complete, ctx.channel()));
         } finally {
             ReferenceCountUtil.release(msg);
         }

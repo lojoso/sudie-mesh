@@ -6,6 +6,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioChannelOption;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.AbstractEventExecutorGroup;
@@ -24,12 +25,11 @@ public class ClusterKernelPool implements Closeable {
         group = new NioEventLoopGroup();
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
-                .option(ChannelOption.TCP_NODELAY, true)
-                .option(ChannelOption.SO_KEEPALIVE, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new DgDecoder()).addLast(new IdleStateHandler(1, 0, 0, TimeUnit.MINUTES))
+                        // 5s 无写操作-开始心跳
+                        ch.pipeline().addLast(new DgDecoder()).addLast(new IdleStateHandler(0,30, 0, TimeUnit.MINUTES))
                                 .addLast(new DiscardClientHandler(ClusterCache.clusters));
                     }
                 });

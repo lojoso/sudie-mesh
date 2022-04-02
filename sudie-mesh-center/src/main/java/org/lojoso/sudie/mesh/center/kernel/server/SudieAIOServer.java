@@ -7,10 +7,18 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioChannelOption;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.lojoso.sudie.mesh.center.config.SudieBaseConfig;
 import org.lojoso.sudie.mesh.center.kernel.client.SudieAIOClient;
+import org.lojoso.sudie.mesh.center.kernel.data.BrokenDgPool;
 import org.lojoso.sudie.mesh.center.kernel.decoder.DgDecoder;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class SudieAIOServer {
 
@@ -36,11 +44,12 @@ public class SudieAIOServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new DgDecoder()).addLast(new DiscardServerHandler());
+                            // 60s 无读取-关闭连接
+                            ch.pipeline().addLast(new IdleStateHandler(60, 0,0, TimeUnit.MINUTES))
+                                    .addLast(new DgDecoder()).addLast(new DiscardServerHandler());
                         }
                     })
-                    .option(ChannelOption.SO_BACKLOG, 2048)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+                    .childOption(NioChannelOption.SO_KEEPALIVE, true);
             ChannelFuture f = b.bind(config.getPort()).sync();
             f.addListener(future -> this.startCluster(config));
             f.channel().closeFuture().sync();

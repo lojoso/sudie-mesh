@@ -17,7 +17,7 @@ public class DgTools {
     public static byte[] HEAD = { 0x68 };
     // 心跳
     public static byte[] HB_AFN = { 0x00 };
-    public static byte[] HB_LEN = { 0x00, 0x09 };
+    public static byte[] HB_LEN = { 0x00, 0x08 };
 
     // 客户端
     public static byte[] CD_AFN = { 0x01 };

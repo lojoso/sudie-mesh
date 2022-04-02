@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.netty.handler.timeout.IdleState.READER_IDLE;
+import static io.netty.handler.timeout.IdleState.WRITER_IDLE;
 
 public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
 
@@ -84,17 +85,12 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            if (Objects.equals(((IdleStateEvent) evt).state(), READER_IDLE)) {
-                if (inActive.get()) {
-                    ctx.close();
-                } else {
-                    ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(DgTools.toHeartbeat()));
-                    inActive.set(true);
-                }
+            if (Objects.equals(((IdleStateEvent) evt).state(), WRITER_IDLE)) {
+                ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(DgTools.toHeartbeat()));
             }
+        }else {
+            super.userEventTriggered(ctx, evt);
         }
-        super.userEventTriggered(ctx, evt);
-        ctx.fireUserEventTriggered(evt);
     }
 
     @Override

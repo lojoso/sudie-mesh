@@ -4,7 +4,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.lojoso.sudie.mesh.center.kernel.client.Cluster;
-import org.lojoso.sudie.mesh.center.kernel.data.CoreDataQueue;
 import org.lojoso.sudie.mesh.center.kernel.model.Dg;
 import org.lojoso.sudie.mesh.center.utils.DgTools;
 

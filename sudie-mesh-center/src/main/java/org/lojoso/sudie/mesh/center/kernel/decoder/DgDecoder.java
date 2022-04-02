@@ -34,8 +34,10 @@ public class DgDecoder extends ByteToMessageDecoder {
 
     private List<Dg> scatterPayload(byte[] payload, List<Dg> result, ChannelId id) {
         for (int i = 0; i < payload.length; i++) {
+            // 查找报文头
             if (Arrays.equals(DgTools.HEAD, Arrays.copyOfRange(payload, i, i + 1))) {
                 if (i != 0 && result.size() == 0) {
+                    // 前报文缺失
                     result.add(new Dg(id, Arrays.copyOfRange(payload, 0, i)));
                 }
                 i = generateDatagram(payload, result, i, id)-1;
@@ -45,24 +47,26 @@ public class DgDecoder extends ByteToMessageDecoder {
     }
 
     private int generateDatagram(byte[] payload, List<Dg> result, int i, ChannelId id) {
-
+        // 带有报文头，是否缺失尾部
         return Optional.of(payload).filter(d -> d.length >= i + 1 + 1 + 2 + 1).map(d -> this.normalDatagram(payload,result,i,id))
                 .orElseGet(() -> this.brokenDatagram(payload, result, i, id));
     }
 
+    // 缺失尾部
     private int brokenDatagram(byte[] payload, List<Dg> result, int i, ChannelId id){
         Dg data = new Dg();
         data.setId(id);
         data.setBroken(true);
-        Optional.of(payload.length).filter(l -> l > i + 1).ifPresent(l -> data.setHead(Arrays.copyOfRange(payload, i, i + 1)));
-        Optional.of(payload.length).filter(l -> l > i + 2).ifPresent(l -> data.setAfn(Arrays.copyOfRange(payload, i + 1, i + 1 + 1)));
-        Optional.of(payload.length).filter(l -> l > i + 4).ifPresent(l -> data.setLength(Arrays.copyOfRange(payload, i + 1 + 1, i + 1 + 1 + 2)));
-        Optional.of(payload.length).filter(l -> l > i + 5).ifPresent(l -> data.setCrc(Arrays.copyOfRange(payload, i + 1 + 1 + 2, i + 1 + 1 + 2 + 1)));
-        Optional.of(payload.length).filter(l -> l > i + 5).ifPresent(l -> data.setBody(Arrays.copyOfRange(payload, i + 1 + 1 + 2 + 1, payload.length)));
+        Optional.of(payload.length).filter(l -> l >= i + 1).ifPresent(l -> data.setHead(Arrays.copyOfRange(payload, i, i + 1)));
+        Optional.of(payload.length).filter(l -> l >= i + 2).ifPresent(l -> data.setAfn(Arrays.copyOfRange(payload, i + 1, i + 1 + 1)));
+        Optional.of(payload.length).filter(l -> l >= i + 4).ifPresent(l -> data.setLength(Arrays.copyOfRange(payload, i + 1 + 1, i + 1 + 1 + 2)));
+        Optional.of(payload.length).filter(l -> l >= i + 5).ifPresent(l -> data.setCrc(Arrays.copyOfRange(payload, i + 1 + 1 + 2, i + 1 + 1 + 2 + 1)));
+        Optional.of(payload.length).filter(l -> l >= i + 5).ifPresent(l -> data.setBody(Arrays.copyOfRange(payload, i + 1 + 1 + 2 + 1, payload.length)));
         result.add(data);
         return payload.length;
     }
 
+    // 正常判断
     private int normalDatagram(byte[] payload, List<Dg> result, int i, ChannelId id){
 
         byte[] head = Arrays.copyOfRange(payload, i, i + 1);

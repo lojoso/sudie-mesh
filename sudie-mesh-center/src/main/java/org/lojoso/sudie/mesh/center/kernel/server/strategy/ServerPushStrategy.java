@@ -26,7 +26,7 @@ public class ServerPushStrategy implements DgStrategy{
     public void doEncode(Channel channel) {
         // todo:触发处理机制
         CoreDataQueue.batchAddRequest(target);
-        System.out.printf("current queue size: %s\n", CoreDataQueue.count());
+//        System.out.printf("current queue size: %s\n", CoreDataQueue.count());
         DataConsumer.requestProcess();
     }
 }
