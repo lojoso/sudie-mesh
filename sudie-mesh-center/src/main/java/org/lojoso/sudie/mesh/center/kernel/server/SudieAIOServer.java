@@ -22,15 +22,13 @@ public class SudieAIOServer {
     }
 
     private void startCluster(SudieBaseConfig config) {
-        Thread cluster = new Thread(() -> {
-            new SudieAIOClient(config);
-        });
+        Thread cluster = new Thread(() -> new SudieAIOClient(config));
         cluster.start();
     }
 
     public SudieAIOServer(SudieBaseConfig config) {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup(5);
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)

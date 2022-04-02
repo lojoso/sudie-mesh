@@ -11,7 +11,6 @@ public class Cluster {
     public static Channel randomChannel(){
         int index = (int) (Math.random() * clusterMapping.size());
         String key = clusterMapping.keySet().toArray(new String[0])[index];
-        System.out.printf("balance to %s \n", key);
         return clusterMapping.get(key);
     }
 

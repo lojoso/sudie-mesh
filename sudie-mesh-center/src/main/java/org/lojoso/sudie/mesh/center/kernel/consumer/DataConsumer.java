@@ -7,6 +7,7 @@ import java.util.List;
 
 public class DataConsumer {
 
+    // 处理请求消费
     public static void requestProcess(){
         List<Dg> target = CoreDataQueue.getRequest(20);
         System.out.println(target);

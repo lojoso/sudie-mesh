@@ -6,19 +6,22 @@ import org.apache.commons.codec.binary.Hex;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Dg {
 
     private ChannelId id;
     private Boolean broken;
+    private int total;
 
     public Dg() {
     }
 
-    public Dg(ChannelId id, byte[] body){
+    public Dg(ChannelId id, byte[] body) {
         this.id = id;
         this.body = body;
         this.broken = true;
+        this.total = body.length;
     }
 
     public Dg(ChannelId id, Boolean broken, byte[] head, byte[] afn, byte[] length, byte[] crc, byte[] body) {
@@ -29,6 +32,7 @@ public class Dg {
         this.length = length;
         this.crc = crc;
         this.body = body;
+        this.total = head.length + afn.length + length.length + crc.length + body.length;
     }
 
     // 报文头：1
@@ -63,6 +67,7 @@ public class Dg {
     }
 
     public void setHead(byte[] head) {
+        this.total = this.total + head.length;
         this.head = head;
     }
 
@@ -71,6 +76,7 @@ public class Dg {
     }
 
     public void setAfn(byte[] afn) {
+        this.total = this.total + afn.length;
         this.afn = afn;
     }
 
@@ -79,6 +85,7 @@ public class Dg {
     }
 
     public void setLength(byte[] length) {
+        this.total = this.total + length.length;
         this.length = length;
     }
 
@@ -87,6 +94,7 @@ public class Dg {
     }
 
     public void setCrc(byte[] crc) {
+        this.total = this.total + crc.length;
         this.crc = crc;
     }
 
@@ -95,22 +103,28 @@ public class Dg {
     }
 
     public void setBody(byte[] body) {
+        this.total = this.total + body.length;
         this.body = body;
     }
 
-    public byte[] combine(byte[] change){
+    public byte[] combine(byte[] change) {
+
         ByteBuffer buffer =
-                ByteBuffer.allocate(head.length + afn.length + length.length + crc.length + body.length);
-        buffer.put(head);
-        buffer.put(Objects.isNull(change) ? afn: change);
-        buffer.put(length);
-        buffer.put(crc);
-        buffer.put(body);
+                ByteBuffer.allocate(total);
+        Optional.ofNullable(head).ifPresent(buffer::put);
+        Optional.ofNullable(afn).ifPresent(a -> buffer.put(Objects.isNull(change) ? a : change));
+        Optional.ofNullable(length).ifPresent(buffer::put);
+        Optional.ofNullable(crc).ifPresent(buffer::put);
+        Optional.ofNullable(body).ifPresent(buffer::put);
         return buffer.array();
+    }
+
+    public byte[] rebuild() {
+        return this.combine(null);
     }
 
     @Override
     public String toString() {
-        return Hex.encodeHexString(body);
+        return Optional.ofNullable(body).map(Hex::encodeHexString).orElse("EMPTY");
     }
 }

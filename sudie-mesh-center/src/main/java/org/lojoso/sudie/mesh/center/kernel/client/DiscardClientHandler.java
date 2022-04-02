@@ -9,6 +9,7 @@ import org.lojoso.sudie.mesh.center.utils.DgTools;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.netty.handler.timeout.IdleState.READER_IDLE;
@@ -21,6 +22,14 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     private final AtomicBoolean inActive = new AtomicBoolean(false);
 
     public DiscardClientHandler(){
+    }
+
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public DiscardClientHandler(ConcurrentHashMap<ChannelId, String> clusters){
+        this.clusters = clusters;
     }
 
     public DiscardClientHandler(String server, ConcurrentHashMap<ChannelId, String> clusters){
@@ -40,13 +49,17 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        Cluster.clusterMapping.putIfAbsent(server, ctx.channel());
+        Cluster.clusterMapping.put(server, ctx.channel());
+        System.out.printf("server: [ %s ] connected ... \n", server);
         ctx.fireChannelActive();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("disconnected");
+        System.out.printf("server: [ %s ] disconnected ... \n", server);
+        Cluster.clusterMapping.remove(server);
+        String server = ClusterCache.clusters.get(ctx.channel().id());
+        ClusterKernelPool.connect(server);
         ctx.fireChannelInactive();
     }
 
@@ -87,5 +100,12 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelWritabilityChanged();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+            throws Exception {
+        System.out.println("exception");
+//        ctx.fireExceptionCaught(cause);
     }
 }

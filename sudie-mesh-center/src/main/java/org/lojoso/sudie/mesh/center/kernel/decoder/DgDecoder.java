@@ -51,7 +51,15 @@ public class DgDecoder extends ByteToMessageDecoder {
     }
 
     private int brokenDatagram(byte[] payload, List<Dg> result, int i, ChannelId id){
-        result.add(new Dg(id, Arrays.copyOfRange(payload, i, payload.length)));
+        Dg data = new Dg();
+        data.setId(id);
+        data.setBroken(true);
+        Optional.of(payload.length).filter(l -> l > i + 1).ifPresent(l -> data.setHead(Arrays.copyOfRange(payload, i, i + 1)));
+        Optional.of(payload.length).filter(l -> l > i + 2).ifPresent(l -> data.setAfn(Arrays.copyOfRange(payload, i + 1, i + 1 + 1)));
+        Optional.of(payload.length).filter(l -> l > i + 4).ifPresent(l -> data.setLength(Arrays.copyOfRange(payload, i + 1 + 1, i + 1 + 1 + 2)));
+        Optional.of(payload.length).filter(l -> l > i + 5).ifPresent(l -> data.setCrc(Arrays.copyOfRange(payload, i + 1 + 1 + 2, i + 1 + 1 + 2 + 1)));
+        Optional.of(payload.length).filter(l -> l > i + 5).ifPresent(l -> data.setBody(Arrays.copyOfRange(payload, i + 1 + 1 + 2 + 1, payload.length)));
+        result.add(data);
         return payload.length;
     }
 

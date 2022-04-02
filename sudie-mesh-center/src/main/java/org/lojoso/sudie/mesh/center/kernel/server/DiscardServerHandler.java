@@ -1,24 +1,28 @@
 package org.lojoso.sudie.mesh.center.kernel.server;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
+import org.apache.commons.lang3.SerializationUtils;
+import org.lojoso.sudie.mesh.center.kernel.data.BrokenDgPool;
 import org.lojoso.sudie.mesh.center.kernel.model.Dg;
 import org.lojoso.sudie.mesh.center.kernel.server.strategy.DgStrategy;
-import org.lojoso.sudie.mesh.center.utils.DgTools;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.stream.Collectors;
 
 import static io.netty.handler.timeout.IdleState.READER_IDLE;
 
 public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
+
+    private BrokenDgPool brokens = new BrokenDgPool();
+
 
     public DiscardServerHandler(){
     }
@@ -53,10 +57,16 @@ public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
         try {
             // ByteBufUtil, Unpooled
             List<Dg> data = (List<Dg>) msg;
+            data.addAll(brokens.combineDg(data.stream().filter(Dg::getBroken).collect(Collectors.toList()), ctx.channel().id()));
             ServiceLoader.load(DgStrategy.class).forEach(e -> e.apply(data, ctx.channel()));
         } finally {
             ReferenceCountUtil.release(msg);
         }
+    }
+
+
+    private void recheckData(List<Dg> data){
+
     }
 
     @Override
