@@ -2,8 +2,8 @@ package org.lojoso.sudie.mesh.center.kernel.data;
 
 import io.netty.channel.ChannelId;
 import org.apache.commons.codec.binary.Hex;
-import org.lojoso.sudie.mesh.center.kernel.model.Dg;
-import org.lojoso.sudie.mesh.center.utils.DgTools;
+import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
+import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,7 +23,7 @@ public class BrokenDgPool {
         ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
         service.schedule(() -> this.withHead.entrySet().forEach(e -> {
             System.out.printf("[%s] data: %s\n", e.getKey().asShortText(), e.getValue().stream().map(d -> Hex.encodeHexString(d.rebuild())).collect(Collectors.joining()));
-        }), 90, TimeUnit.SECONDS);
+        }), 30, TimeUnit.SECONDS);
     }
 
     private void joinPoolHandler(Dg data, ChannelId id, List<Dg> array) {

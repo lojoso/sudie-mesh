@@ -4,15 +4,17 @@ import io.netty.channel.Channel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.lojoso.sudie.mesh.center.kernel.consumer.DataConsumer;
 import org.lojoso.sudie.mesh.center.kernel.data.CoreDataQueue;
-import org.lojoso.sudie.mesh.center.kernel.model.Dg;
-import org.lojoso.sudie.mesh.center.utils.DgTools;
+import org.lojoso.sudie.mesh.common.decode.strategy.DgStrategy;
+import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
+import org.lojoso.sudie.mesh.common.model.Dg;
+
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 // 服务队列均衡动作，分散发送
-public class ServerPushStrategy implements DgStrategy{
+public class ServerPushStrategy implements DgStrategy {
 
     private List<Dg> target;
 

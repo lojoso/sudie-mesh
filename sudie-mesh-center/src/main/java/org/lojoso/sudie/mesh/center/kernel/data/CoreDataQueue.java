@@ -1,6 +1,7 @@
 package org.lojoso.sudie.mesh.center.kernel.data;
 
-import org.lojoso.sudie.mesh.center.kernel.model.Dg;
+
+import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;

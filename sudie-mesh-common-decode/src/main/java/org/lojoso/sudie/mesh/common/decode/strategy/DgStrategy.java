@@ -1,7 +1,7 @@
-package org.lojoso.sudie.mesh.center.kernel.server.strategy;
+package org.lojoso.sudie.mesh.common.decode.strategy;
 
 import io.netty.channel.Channel;
-import org.lojoso.sudie.mesh.center.kernel.model.Dg;
+import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.List;
 

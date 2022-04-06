@@ -1,4 +1,4 @@
-package org.lojoso.sudie.mesh.center.utils;
+package org.lojoso.sudie.mesh.common.utils;
 
 import java.util.Objects;
 

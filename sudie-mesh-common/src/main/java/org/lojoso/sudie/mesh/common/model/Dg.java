@@ -1,10 +1,9 @@
-package org.lojoso.sudie.mesh.center.kernel.model;
+package org.lojoso.sudie.mesh.common.model;
 
 import io.netty.channel.ChannelId;
 import org.apache.commons.codec.binary.Hex;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 

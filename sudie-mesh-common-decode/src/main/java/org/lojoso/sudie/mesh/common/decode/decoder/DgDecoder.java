@@ -1,12 +1,13 @@
-package org.lojoso.sudie.mesh.center.kernel.decoder;
+package org.lojoso.sudie.mesh.common.decode.decoder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.lojoso.sudie.mesh.center.kernel.model.Dg;
-import org.lojoso.sudie.mesh.center.utils.DgTools;
+import org.apache.commons.codec.binary.Hex;
+import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
+import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ public class DgDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> list) {
         byte[] payload = ByteBufUtil.getBytes(in);
+        System.out.printf("srcData: %s\n", Hex.encodeHexString(payload));
         List<Dg> dgs = analysis(payload, ctx.channel().id(), new ArrayList<>());
         // 传递list
         list.add(dgs);
