@@ -21,6 +21,15 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.lojoso</groupId>
+            <artifactId>sudie-mesh-common-decode</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -3,7 +3,7 @@ package org.lojoso.sudie.mesh.center.kernel.server.strategy;
 import io.netty.channel.Channel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.lojoso.sudie.mesh.center.kernel.consumer.DataConsumer;
-import org.lojoso.sudie.mesh.center.kernel.data.CoreDataQueue;
+import org.lojoso.sudie.mesh.common.data.CoreDataQueue;
 import org.lojoso.sudie.mesh.common.decode.strategy.DgStrategy;
 import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
 import org.lojoso.sudie.mesh.common.model.Dg;

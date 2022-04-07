@@ -1,32 +1,22 @@
-package org.lojoso.sudie.mesh.center.kernel.data;
+package org.lojoso.sudie.mesh.common.decode.decoder;
 
 import io.netty.channel.ChannelId;
 import org.apache.commons.codec.binary.Hex;
+import org.lojoso.sudie.mesh.common.data.BrokenDgPool;
 import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-// 断帧池
-public class BrokenDgPool {
+public class DecoderBrokenPool extends BrokenDgPool {
 
-    private final ConcurrentHashMap<ChannelId, ArrayDeque<Dg>> withHead;
-
-    public BrokenDgPool() {
-        this.withHead = new ConcurrentHashMap<>();
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
-        service.schedule(() -> this.withHead.entrySet().forEach(e -> {
-            System.out.printf("[%s] data: %s\n", e.getKey().asShortText(), e.getValue().stream().map(d -> Hex.encodeHexString(d.rebuild())).collect(Collectors.joining()));
-        }), 30, TimeUnit.SECONDS);
+    public DecoderBrokenPool(){
+        super();
     }
 
-    private void joinPoolHandler(Dg data, ChannelId id, List<Dg> array) {
+    public void joinPoolHandler(Dg data, ChannelId id, List<Dg> array) {
         synchronized (withHead.get(id)) {
             System.out.printf("[%s] 报文异常：%s \n", id.asShortText(), Hex.encodeHexString(data.rebuild()));
             if (Objects.isNull(data.getHead())) {
@@ -60,5 +50,4 @@ public class BrokenDgPool {
         datas.stream().filter(Dg::getBroken).forEach(d -> this.joinPoolHandler(d, id, result));
         return result;
     }
-
 }

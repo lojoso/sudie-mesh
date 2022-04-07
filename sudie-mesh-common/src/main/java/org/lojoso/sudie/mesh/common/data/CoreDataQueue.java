@@ -1,4 +1,4 @@
-package org.lojoso.sudie.mesh.center.kernel.data;
+package org.lojoso.sudie.mesh.common.data;
 
 
 import org.lojoso.sudie.mesh.common.model.Dg;

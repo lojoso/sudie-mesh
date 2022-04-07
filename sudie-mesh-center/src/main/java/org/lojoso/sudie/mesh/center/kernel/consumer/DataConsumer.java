@@ -1,6 +1,6 @@
 package org.lojoso.sudie.mesh.center.kernel.consumer;
 
-import org.lojoso.sudie.mesh.center.kernel.data.CoreDataQueue;
+import org.lojoso.sudie.mesh.common.data.CoreDataQueue;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.List;

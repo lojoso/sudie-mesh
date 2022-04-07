@@ -6,24 +6,38 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.apache.commons.codec.binary.Hex;
+import org.lojoso.sudie.mesh.common.data.BrokenDgPool;
 import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class DgDecoder extends ByteToMessageDecoder {
 
+    private BrokenDgPool brokens = new DecoderBrokenPool();
+
+    private ChainDecoder getChainService(){
+        Iterator<ChainDecoder> iterable = ServiceLoader.load(ChainDecoder.class).iterator();
+        ChainDecoder next = null;
+        while (iterable.hasNext()){
+            next = iterable.next();
+        }
+        return next;
+    }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> list) {
         byte[] payload = ByteBufUtil.getBytes(in);
         System.out.printf("srcData: %s\n", Hex.encodeHexString(payload));
         List<Dg> dgs = analysis(payload, ctx.channel().id(), new ArrayList<>());
+
+        dgs.addAll(brokens.combineDg(dgs.stream().filter(Dg::getBroken).collect(Collectors.toList()), ctx.channel().id()));
+        List<Dg> complete = dgs.stream().filter(((Predicate<Dg>) Dg::getBroken).negate()).collect(Collectors.toList());
+
         // 传递list
-        list.add(dgs);
+        list.add(Optional.ofNullable(getChainService()).<Object>map(svc -> svc.chainDecoder(complete)).orElse(complete));
         // 跳过已读
         in.skipBytes(in.readableBytes());
     }
