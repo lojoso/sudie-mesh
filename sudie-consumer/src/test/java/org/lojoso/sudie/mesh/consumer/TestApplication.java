@@ -16,11 +16,11 @@ public class TestApplication {
     @Test
     public void testSendRequest() throws InterruptedException {
 
-        ConsumerClient.startCluster("localhost:60001");
+        ConsumerClient.startCluster("localhost:60001,localhost:60002");
         ConsumerProxy.getProxy(TestService.class).sayHello(new TUser("123"));
         Executors.newScheduledThreadPool(10).scheduleWithFixedDelay(() -> {
             ConsumerProxy.getProxy(TestService.class).sayHello("我", String.valueOf(Math.random()));
-        }, 1, 1000, TimeUnit.MILLISECONDS);
+        }, 1, 10, TimeUnit.MILLISECONDS);
         LockSupport.park();
     }
 

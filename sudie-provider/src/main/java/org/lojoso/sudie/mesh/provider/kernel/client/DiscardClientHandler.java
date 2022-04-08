@@ -4,6 +4,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
+import org.lojoso.sudie.mesh.common.encode.encoder.ProviderEncoder;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.provider.kernel.data.RequestModel;
 
@@ -23,7 +24,26 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     private String server;
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
+    private Class<?>[] classes;
+    private ProviderEncoder encoder;
+
     public DiscardClientHandler(){
+    }
+
+    public Class<?>[] getClasses() {
+        return classes;
+    }
+
+    public void setClasses(Class<?>[] classes) {
+        this.classes = classes;
+    }
+
+    public ProviderEncoder getEncoder() {
+        return encoder;
+    }
+
+    public void setEncoder(ProviderEncoder encoder) {
+        this.encoder = encoder;
     }
 
     public void setServer(String server) {
@@ -43,6 +63,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Cluster.clusterMapping.put(server, ctx.channel());
+        Arrays.stream(classes).forEach(e -> RegHandler.regToCluster(ctx.channel(), encoder.encode(e)));
         System.out.printf("server: [ %s ] connected ... \n", server);
         ctx.fireChannelActive();
     }
@@ -51,7 +72,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.printf("server: [ %s ] disconnected ... \n", server);
         Cluster.clusterMapping.remove(server);
-        ProviderClient.connect(ClusterCache.clusters.remove(ctx.channel().id()), null);
+        ProviderClient.connect(ClusterCache.clusters.remove(ctx.channel().id()), null, classes);
         ctx.fireChannelInactive();
     }
 
@@ -62,6 +83,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
             List<RequestModel> data = (List<RequestModel>) msg;
             data.forEach(d -> executorService.submit(() -> {
                 try {
+                    System.out.printf("from [ %s ] ", ClusterCache.clusters.get(d.getId()));
                     d.getTargetMethod().invoke(d.getTarget(), d.getTargetParams());
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     e.printStackTrace();
