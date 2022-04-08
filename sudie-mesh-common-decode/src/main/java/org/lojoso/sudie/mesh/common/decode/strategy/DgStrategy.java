@@ -9,12 +9,12 @@ import java.util.List;
 public interface DgStrategy {
 
     // 判断报文是否有符合
-    boolean judge(List<Dg> datas);
+    boolean judge(List<? extends Dg> datas);
 
     // 解析操作
     void doEncode(Channel channel);
 
-    default void apply(List<Dg> datas, Channel channel) {
+    default void apply(List<? extends Dg> datas, Channel channel) {
         if (judge(datas)) {
             doEncode(channel);
         }

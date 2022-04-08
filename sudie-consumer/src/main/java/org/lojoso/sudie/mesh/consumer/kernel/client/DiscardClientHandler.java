@@ -1,11 +1,10 @@
-package org.lojoso.sudie.mesh.center.kernel.client;
+package org.lojoso.sudie.mesh.consumer.kernel.client;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
-import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
@@ -19,24 +18,12 @@ import static io.netty.handler.timeout.IdleState.WRITER_IDLE;
 public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
 
     private String server;
-    private ConcurrentHashMap<ChannelId, String> clusters;
-    // 心跳标志
-    private final AtomicBoolean inActive = new AtomicBoolean(false);
 
     public DiscardClientHandler(){
     }
 
     public void setServer(String server) {
         this.server = server;
-    }
-
-    public DiscardClientHandler(ConcurrentHashMap<ChannelId, String> clusters){
-        this.clusters = clusters;
-    }
-
-    public DiscardClientHandler(String server, ConcurrentHashMap<ChannelId, String> clusters){
-        this.server = server;
-        this.clusters = clusters;
     }
 
     @Override
@@ -60,8 +47,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.printf("server: [ %s ] disconnected ... \n", server);
         Cluster.clusterMapping.remove(server);
-        String server = ClusterCache.clusters.remove(ctx.channel().id());
-        ClusterKernelPool.connect(server);
+        ConsumerClient.connect(ClusterCache.clusters.remove(ctx.channel().id()), null);
         ctx.fireChannelInactive();
     }
 
@@ -69,10 +55,8 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     @SuppressWarnings("unchecked")
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
-            inActive.set(false);
-            List<Dg> data = (List<Dg>) msg;
-
-            System.out.printf("%s :=> %s \n", clusters.get(ctx.channel().id()), data);
+//            List<Dg> data = (List<Dg>) msg;
+//            System.out.printf("%s :=> %s \n", ClusterCache.clusters.get(ctx.channel().id()), data);
         } finally {
             ctx.fireChannelRead(msg);
         }
@@ -102,7 +86,6 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
-        System.out.println("exception");
-//        ctx.fireExceptionCaught(cause);
+        cause.printStackTrace();
     }
 }

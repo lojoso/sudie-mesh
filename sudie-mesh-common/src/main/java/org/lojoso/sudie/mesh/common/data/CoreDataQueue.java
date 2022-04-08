@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 // 请求核心队列
 public class CoreDataQueue {
 
-    private static final ConcurrentLinkedDeque<Dg> dQueue = new ConcurrentLinkedDeque<>();
+    private static final ConcurrentLinkedDeque<? super Dg> dQueue = new ConcurrentLinkedDeque<>();
 
     public static int count(){
         return dQueue.size();
@@ -21,11 +21,11 @@ public class CoreDataQueue {
         dQueue.add(data);
     }
 
-    public static void batchAddRequest(List<Dg> data) {
+    public static void batchAddRequest(List<? extends Dg> data) {
         dQueue.addAll(data);
     }
 
-    public static List<Dg> getRequest(int size) {
+    public static List<? super Dg> getRequest(int size) {
         return IntStream.range(0, Math.min(dQueue.size(), size)).boxed().map(e -> dQueue.remove()).collect(Collectors.toList());
     }
 }

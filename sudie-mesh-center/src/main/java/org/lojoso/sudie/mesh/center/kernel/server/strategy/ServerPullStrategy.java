@@ -11,14 +11,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.lojoso.sudie.mesh.common.model.CommonData.*;
+
 // 服务队列均衡动作，主动拉取
 public class ServerPullStrategy implements DgStrategy {
 
     private List<Dg> target;
 
     @Override
-    public boolean judge(List<Dg> datas) {
-        target = datas.stream().filter(e -> Arrays.equals(e.getAfn(), DgTools.SD_AFN_PULL)).collect(Collectors.toList());
+    public boolean judge(List<? extends Dg> datas) {
+        target = datas.stream().filter(e -> Arrays.equals(e.getAfn(), SD_AFN_PULL)).collect(Collectors.toList());
         return CollectionUtils.isNotEmpty(target);
     }
 

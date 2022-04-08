@@ -8,15 +8,18 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import org.apache.commons.codec.binary.Hex;
 import org.lojoso.sudie.mesh.common.data.BrokenDgPool;
 import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
+import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.lojoso.sudie.mesh.common.model.CommonData.*;
+
 public class DgDecoder extends ByteToMessageDecoder {
 
-    private BrokenDgPool brokens = new DecoderBrokenPool();
+    private final BrokenDgPool brokens = new DecoderBrokenPool();
 
     private ChainDecoder getChainService(){
         Iterator<ChainDecoder> iterable = ServiceLoader.load(ChainDecoder.class).iterator();
@@ -37,7 +40,7 @@ public class DgDecoder extends ByteToMessageDecoder {
         List<Dg> complete = dgs.stream().filter(((Predicate<Dg>) Dg::getBroken).negate()).collect(Collectors.toList());
 
         // 传递list
-        list.add(Optional.ofNullable(getChainService()).<Object>map(svc -> svc.chainDecoder(complete)).orElse(complete));
+        list.add(Optional.ofNullable(getChainService()).<List<? extends Dg>>map(svc -> svc.chainDecoder(complete)).orElse(complete));
         // 跳过已读
         in.skipBytes(in.readableBytes());
     }
@@ -51,7 +54,7 @@ public class DgDecoder extends ByteToMessageDecoder {
     private List<Dg> scatterPayload(byte[] payload, List<Dg> result, ChannelId id) {
         for (int i = 0; i < payload.length; i++) {
             // 查找报文头
-            if (Arrays.equals(DgTools.HEAD, Arrays.copyOfRange(payload, i, i + 1))) {
+            if (Arrays.equals(HEAD, Arrays.copyOfRange(payload, i, i + 1))) {
                 if (i != 0 && result.size() == 0) {
                     // 前报文缺失
                     result.add(new Dg(id, Arrays.copyOfRange(payload, 0, i)));
@@ -94,7 +97,7 @@ public class DgDecoder extends ByteToMessageDecoder {
         // 1 == crc.length
         byte[] crc = Arrays.copyOfRange(payload, i + 1 + 1 + 2, i + 1 + 1 + 2 + 1);
         byte[] body = Arrays.copyOfRange(payload, i + 1 + 1 + 2 + 1, Math.min(i + 1 + 1 + 2 + 1 + DgTools.toShort(length), payload.length));
-        isBroken = isBroken || (!Arrays.equals(DgTools.crcCheck(body), crc));
+        isBroken = isBroken || (!Arrays.equals(CommonMethod.crcCheck(body), crc));
 
         result.add(new Dg(id, isBroken, head, afn, length, crc, body));
         return isBroken ? payload.length : i + 1 + 1 + 2 + 1 + DgTools.toShort(length);

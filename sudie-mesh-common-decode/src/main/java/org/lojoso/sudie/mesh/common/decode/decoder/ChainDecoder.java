@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ChainDecoder {
 
-    List<Object> chainDecoder(List<Dg> data);
+    List<? extends Dg> chainDecoder(List<Dg> data);
 }

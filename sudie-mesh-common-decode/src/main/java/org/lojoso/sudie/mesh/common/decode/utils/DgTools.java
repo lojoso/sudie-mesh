@@ -1,6 +1,7 @@
 package org.lojoso.sudie.mesh.common.decode.utils;
 
 import io.netty.channel.ChannelId;
+import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.nio.ByteBuffer;
@@ -8,19 +9,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 
+import static org.lojoso.sudie.mesh.common.model.CommonData.*;
+
 public class DgTools {
-
-    public static byte[] HEAD = { 0x68 };
-    // 心跳
-    public static byte[] HB_AFN = { 0x00 };
-    public static byte[] HB_LEN = { 0x00, 0x08 };
-
-    // 客户端
-    public static byte[] CD_AFN = { 0x01 };
-    // 服务端 均衡拉取
-    public static byte[] SD_AFN_PULL = { 0x11 };
-    // 服务端 均衡入队列
-    public static byte[] SD_AFN_PUSH = { 0x12 };
 
 
     // 无符号
@@ -46,36 +37,10 @@ public class DgTools {
             // 1 == crc.length
             byte[] crc = Arrays.copyOfRange(payload, 1 + 1 + 2, 1 + 1 + 2 + 1);
             byte[] body = Arrays.copyOfRange(payload, 1 + 1 + 2 + 1, Math.min(1 + 1 + 2 + 1 + DgTools.toShort(length), payload.length));
-            isBroken = isBroken || (!Arrays.equals(DgTools.crcCheck(body), crc));
+            isBroken = isBroken || (!Arrays.equals(CommonMethod.crcCheck(body), crc));
             return new Dg(id, isBroken, head, afn, length, crc, body);
         }
         return new Dg(id, payload);
     }
 
-    public static byte[] crcCheck(byte[] bytes){
-        byte result = (byte) 0x00;
-        for (byte b : bytes) {
-            result = (byte) (result ^ b);
-        }
-        return new byte[]{result};
-    }
-
-
-    public static byte[] toHeartbeat(){
-        byte[] time = currentTime();
-        ByteBuffer buffer = ByteBuffer.allocate(13);
-        buffer.put(HEAD);
-        buffer.put(HB_AFN);
-        buffer.put(HB_LEN);
-        buffer.put(crcCheck(time));
-        buffer.put(time);
-        return buffer.array();
-    }
-
-    public static byte[] currentTime(){
-        long time = LocalDateTime.now().toEpochSecond(ZoneOffset.ofHours(8));
-        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-        buffer.putLong(time);
-        return buffer.array();
-    }
 }

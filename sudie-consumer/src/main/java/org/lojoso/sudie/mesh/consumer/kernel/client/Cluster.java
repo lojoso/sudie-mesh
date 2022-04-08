@@ -1,11 +1,13 @@
 package org.lojoso.sudie.mesh.consumer.kernel.client;
 
 import io.netty.channel.Channel;
+import org.lojoso.sudie.mesh.common.encode.encoder.ConsumerEncoder;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Cluster {
 
+    public static final ConsumerEncoder encoder = new ConsumerEncoder();
     public static final ConcurrentHashMap<String, Channel> clusterMapping = new ConcurrentHashMap<>();
 
     public static Channel randomChannel(){

@@ -1,19 +1,18 @@
 package org.lojoso.sudie.mesh.center.kernel.server;
 
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
-
-import org.lojoso.sudie.mesh.common.data.BrokenDgPool;
 import org.lojoso.sudie.mesh.common.decode.strategy.DgStrategy;
+import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
+import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static io.netty.handler.timeout.IdleState.READER_IDLE;
 
@@ -37,6 +36,7 @@ public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // 通道初始化
+        ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(CommonMethod.toHeartbeat()));
         ctx.fireChannelActive();
     }
 
