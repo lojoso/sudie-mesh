@@ -27,7 +27,7 @@ public class ClusterKernelPool implements Closeable {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         // 5s 无写操作-开始心跳
-                        ch.pipeline().addLast(new DgDecoder()).addLast(new IdleStateHandler(0,30, 0, TimeUnit.MINUTES))
+                        ch.pipeline().addLast(new DgDecoder()).addLast(new IdleStateHandler(0,60, 0, TimeUnit.SECONDS))
                                 .addLast(new DiscardClientHandler(ClusterCache.clusters));
                     }
                 });

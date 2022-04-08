@@ -6,7 +6,7 @@ import io.netty.channel.Channel;
 public class RegHandler {
 
     public static void regToCluster(byte[] payload){
-        Cluster.clusterMapping.values().forEach(e -> e.writeAndFlush(Unpooled.wrappedBuffer(payload)));
+        ClusterCache.clusterMapping.values().forEach(e -> e.writeAndFlush(Unpooled.wrappedBuffer(payload)));
     }
 
     public static void regToCluster(Channel channel, byte[] payload){

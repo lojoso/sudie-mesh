@@ -21,7 +21,6 @@ public class ProviderClient {
 
     private static final Bootstrap bootstrap = new Bootstrap();
     private static final NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
-    private static final ProviderEncoder encoder = new ProviderEncoder();
 
     static {
         bootstrap.group(eventLoopGroup)
@@ -30,7 +29,7 @@ public class ProviderClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         // 5s 无写操作-开始心跳
-                        ch.pipeline().addLast(new DgDecoder()).addLast(new IdleStateHandler(0, 30, 0, TimeUnit.MINUTES))
+                        ch.pipeline().addLast(new DgDecoder()).addLast(new IdleStateHandler(0, 30, 0, TimeUnit.SECONDS))
                                 .addLast(new DiscardClientHandler());
                     }
                 });
@@ -54,7 +53,7 @@ public class ProviderClient {
                 DiscardClientHandler handler = channelFuture.channel().pipeline().get(DiscardClientHandler.class);
                 handler.setServer(server);
                 handler.setClasses(classes);
-                handler.setEncoder(encoder);
+                handler.setEncoder(Cluster.encoder);
                 ClusterCache.clusters.put(channelFuture.channel().id(), server);
             } else {
                 channelFuture.channel().eventLoop().schedule(() -> connect(server, count, classes), 1, TimeUnit.SECONDS);

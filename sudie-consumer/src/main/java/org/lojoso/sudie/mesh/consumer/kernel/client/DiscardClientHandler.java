@@ -38,7 +38,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        Cluster.clusterMapping.put(server, ctx.channel());
+        ClusterCache.clusterMapping.put(server, ctx.channel());
         System.out.printf("server: [ %s ] connected ... \n", server);
         ctx.fireChannelActive();
     }
@@ -46,7 +46,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.printf("server: [ %s ] disconnected ... \n", server);
-        Cluster.clusterMapping.remove(server);
+        ClusterCache.clusterMapping.remove(server);
         ConsumerClient.connect(ClusterCache.clusters.remove(ctx.channel().id()), null);
         ctx.fireChannelInactive();
     }
