@@ -13,6 +13,7 @@
     <module>sudie-mesh-common</module>
     <module>sudie-mesh-common-decode</module>
     <module>sudie-mesh-common-encode</module>
+      <module>sudie-provider</module>
   </modules>
 
   <name>sudie-mesh</name>

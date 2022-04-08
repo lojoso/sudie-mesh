@@ -33,7 +33,7 @@ public class DgDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> list) {
         byte[] payload = ByteBufUtil.getBytes(in);
-        System.out.printf("srcData: %s\n", Hex.encodeHexString(payload));
+//        System.out.printf("srcData: %s\n", Hex.encodeHexString(payload));
         List<Dg> dgs = analysis(payload, ctx.channel().id(), new ArrayList<>());
 
         dgs.addAll(brokens.combineDg(dgs.stream().filter(Dg::getBroken).collect(Collectors.toList()), ctx.channel().id()));

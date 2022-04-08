@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-public class ConsumerEncoder implements DefaultEncoder{
+public class ConsumerEncoder{
 
     public byte[] encode(Method method, Object[] args){
 
