@@ -3,12 +3,14 @@ package org.lojoso.sudie.mesh.provider.kernel.client;
 import io.netty.channel.Channel;
 import org.lojoso.sudie.mesh.common.encode.encoder.ConsumerEncoder;
 import org.lojoso.sudie.mesh.common.encode.encoder.ProviderEncoder;
+import org.lojoso.sudie.mesh.common.encode.encoder.ResponseEncoder;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Cluster {
 
     public static final ProviderEncoder encoder = new ProviderEncoder();
+    public static final ResponseEncoder resEncoder = new ResponseEncoder();
 
     public static Channel randomChannel(){
         int index = (int) (Math.random() * ClusterCache.clusterMapping.size());

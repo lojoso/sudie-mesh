@@ -9,8 +9,6 @@ public class ClusterCache {
 
     // Channel缓存
     public static final ConcurrentHashMap<ChannelId, String> clusters = new ConcurrentHashMap<>();
-
     public static final ConcurrentHashMap<String, Channel> clusterMapping = new ConcurrentHashMap<>();
-
     public static final ConcurrentHashMap<String, Object> serviceMapping = new ConcurrentHashMap<>();
 }

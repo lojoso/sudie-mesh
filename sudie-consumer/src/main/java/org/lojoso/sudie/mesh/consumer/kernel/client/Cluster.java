@@ -3,10 +3,13 @@ package org.lojoso.sudie.mesh.consumer.kernel.client;
 import io.netty.channel.Channel;
 import org.lojoso.sudie.mesh.common.encode.encoder.ConsumerEncoder;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Cluster {
 
+    // uuid标识
+    public static final String uuid = UUID.randomUUID().toString();
     public static final ConsumerEncoder encoder = new ConsumerEncoder();
 
     public static Channel randomChannel(){

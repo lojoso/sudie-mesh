@@ -11,6 +11,7 @@ public class RequestModel extends Dg {
     private String methodName;
     private int argsCount;
     private List<byte[]> argsData;
+    private int channelIndex;
 
     public String getClassName() {
         return className;
@@ -34,6 +35,14 @@ public class RequestModel extends Dg {
 
     public void setArgsData(List<byte[]> argsData) {
         this.argsData = argsData;
+    }
+
+    public int getChannelIndex() {
+        return channelIndex;
+    }
+
+    public void setChannelIndex(int channelIndex) {
+        this.channelIndex = channelIndex;
     }
 
     public RequestModel() {

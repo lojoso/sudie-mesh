@@ -7,6 +7,7 @@ import org.lojoso.sudie.mesh.consumer.kernel.client.ConsumerClient;
 import org.lojoso.sudie.mesh.consumer.kernel.proxy.ConsumerProxy;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 

@@ -4,6 +4,14 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.lojoso.sudie.mesh.center.kernel.client.Cluster;
+import org.lojoso.sudie.mesh.center.kernel.client.ClusterCache;
+import org.lojoso.sudie.mesh.center.kernel.consumer.DataConsumer;
+import org.lojoso.sudie.mesh.center.kernel.server.ClientCache;
+import org.lojoso.sudie.mesh.center.kernel.server.analysis.Analysis;
+import org.lojoso.sudie.mesh.center.kernel.server.analysis.request.RequestAnalysis;
+import org.lojoso.sudie.mesh.center.kernel.server.analysis.request.RequestModel;
+import org.lojoso.sudie.mesh.center.kernel.service.ServiceCache;
+import org.lojoso.sudie.mesh.common.data.CoreDataQueue;
 import org.lojoso.sudie.mesh.common.decode.strategy.DgStrategy;
 import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
 import org.lojoso.sudie.mesh.common.model.CommonData;
@@ -20,6 +28,8 @@ import static org.lojoso.sudie.mesh.common.model.CommonData.*;
 public class ClientStrategy implements DgStrategy {
 
     private List<Dg> target;
+    private final Analysis<RequestModel> analysis = new RequestAnalysis();
+
 
     @Override
     public boolean judge(List<? extends Dg> datas) {
@@ -30,7 +40,12 @@ public class ClientStrategy implements DgStrategy {
 
     @Override
     public void doEncode(Channel channel) {
-        target.forEach((e) -> Cluster.randomChannel().write(Unpooled.wrappedBuffer(e.combine(CommonData.SD_AFN_PUSH))));
-        Cluster.flush();
+        // type[0]: client -> server -> server 二次负载分发，目前看没有太大优势，consumer层进行负载好一些。
+        // target.forEach((e) -> Cluster.randomChannel().write(Unpooled.wrappedBuffer(e.combine(CommonData.SD_AFN_PUSH))));
+        // Cluster.flush();
+        List<RequestModel> requests = analysis.analysis(target);
+        requests.forEach(e -> e.setChannelIndex(ClientCache.getIndex(channel)));
+        target.forEach((e) -> CoreDataQueue.batchAddRequest(requests));
+        DataConsumer.requestProcess();
     }
 }

@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
+import org.lojoso.sudie.mesh.center.kernel.service.ServiceCache;
 import org.lojoso.sudie.mesh.common.decode.strategy.DgStrategy;
 import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
@@ -36,13 +37,15 @@ public class DiscardServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // 通道初始化
-        ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(CommonMethod.toHeartbeat()));
         ctx.fireChannelActive();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         // 通道销毁
+        // client + server
+        ClientCache.removeClient(ctx.channel());
+        ServiceCache.removeService(ctx.channel());
         ctx.fireChannelInactive();
     }
 

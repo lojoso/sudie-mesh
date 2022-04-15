@@ -8,13 +8,25 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-public class ConsumerEncoder{
+public class ConsumerEncoder {
 
-    public byte[] encode(Method method, Object[] args){
+    public byte[] cliEncode(String uuid) {
+        byte[] bytes = uuid.getBytes(StandardCharsets.UTF_8);
+        // head + afn + length + crc + uuid
+        ByteBuffer dataBuffer = ByteBuffer.allocate(1 + 1 + 2 + 1 + bytes.length);
+        dataBuffer.put(CommonData.HEAD);
+        dataBuffer.put(CommonData.CD_AFN_CLI_REG);
+        dataBuffer.putShort((short) bytes.length);
+        dataBuffer.put(CommonMethod.crcCheck(bytes));
+        dataBuffer.put(bytes);
+        return dataBuffer.array();
+    }
+
+    public byte[] encode(Method method, Object[] args) {
 
         int total = 0;
         byte[][] byteArgs = new byte[args.length][];
-        for (int i = 0; i< args.length; i++) {
+        for (int i = 0; i < args.length; i++) {
             byteArgs[i] = FastSerialization.getFstConfig(args[i].getClass()).get().asByteArray(args[i]);
             total += 2 + byteArgs[i].length;
         }
@@ -28,7 +40,7 @@ public class ConsumerEncoder{
         dataBuffer.put(className);
         dataBuffer.putShort((short) methodName.length);
         dataBuffer.put(methodName);
-        for (int i = 0; i< args.length; i++){
+        for (int i = 0; i < args.length; i++) {
             dataBuffer.putShort((short) byteArgs[i].length);
             dataBuffer.put(byteArgs[i]);
         }

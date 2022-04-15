@@ -33,6 +33,23 @@ public interface CommonData {
      * version: class版本
      */
     byte[] CD_AFN_REG = { 0X02 };
+
+    /**
+     * From客户端 - 调用返回
+     * body -> state
+     *         state + result_length + resBody
+     *         state + error_length + error
+     */
+    byte[] CD_AFN_RES = { 0X03 };
+
+    /**
+     * From客户端 - consumer注册
+     *
+     * body ->
+     * uuid
+     */
+    byte[] CD_AFN_CLI_REG = { 0X04 };
+
     // 服务端 均衡拉取
     byte[] SD_AFN_PULL = { 0x11 };
     // 服务端 均衡入队列

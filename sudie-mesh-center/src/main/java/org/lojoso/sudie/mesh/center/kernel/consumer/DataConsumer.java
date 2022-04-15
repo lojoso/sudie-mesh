@@ -18,7 +18,7 @@ public class DataConsumer {
     public static void requestProcess(){
         List<? super Dg> target = CoreDataQueue.getRequest(1000);
         target.stream().map(e -> (RequestModel) e).forEach(e -> {
-            Optional.ofNullable(ServiceCache.cache.get(e.getClassName())).map(c -> c.writeAndFlush(Unpooled.wrappedBuffer(e.rebuild())))
+            Optional.ofNullable(ServiceCache.randomChannel(e.getClassName())).map(c -> c.writeAndFlush(Unpooled.wrappedBuffer(e.rebuild())))
                     .orElseGet(() -> {
 //                        CoreDataQueue.addRequest(e);
                         return null;

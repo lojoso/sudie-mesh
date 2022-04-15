@@ -9,6 +9,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -16,7 +17,7 @@ import java.util.stream.Stream;
 public class ConsumerClient {
 
     private static final Bootstrap bootstrap = new Bootstrap();
-    private static final NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+    private static final NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
 
     static {
         bootstrap.group(eventLoopGroup)
@@ -45,6 +46,9 @@ public class ConsumerClient {
         String[] args = server.split(":");
         bootstrap.connect(args[0], Integer.parseInt(args[1])).addListener((ChannelFutureListener) channelFuture -> {
             if (channelFuture.isSuccess()) {
+                DiscardClientHandler handler = channelFuture.channel().pipeline().get(DiscardClientHandler.class);
+                handler.setEncoder(Cluster.encoder);
+
                 Optional.ofNullable(count).ifPresent(CountDownLatch::countDown);
                 channelFuture.channel().pipeline().get(DiscardClientHandler.class).setServer(server);
                 ClusterCache.clusters.put(channelFuture.channel().id(), server);

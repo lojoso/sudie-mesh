@@ -1,17 +1,21 @@
 package org.lojoso.sudie.mesh.provider.kernel.client;
 
 import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.lojoso.sudie.mesh.common.encode.encoder.ProviderEncoder;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
+import org.lojoso.sudie.mesh.common.model.CommonState;
 import org.lojoso.sudie.mesh.provider.kernel.data.RequestModel;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -63,6 +67,8 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ClusterCache.clusterMapping.put(server, ctx.channel());
+        // 注册到cluser-center
+        
         Arrays.stream(classes).forEach(e -> RegHandler.regToCluster(ctx.channel(), encoder.encode(e)));
         System.out.printf("server: [ %s ] connected ... \n", server);
         ctx.fireChannelActive();
@@ -81,16 +87,21 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
             List<RequestModel> data = (List<RequestModel>) msg;
-            data.forEach(d -> executorService.submit(() -> {
-                try {
-                    System.out.printf("from [ %s ] ", ClusterCache.clusters.get(d.getId()));
-                    d.getTargetMethod().invoke(d.getTarget(), d.getTargetParams());
-                } catch (InvocationTargetException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }));
+            // 接收Request后调用
+            data.forEach(d -> executorService.submit(() -> requestExecutor(d, ctx.channel())));
         } finally {
             ctx.fireChannelRead(msg);
+        }
+    }
+
+    private void requestExecutor(RequestModel model, Channel channel){
+        try {
+            System.out.printf("from [ %s ] ", ClusterCache.clusters.get(model.getId()));
+            channel.writeAndFlush(Unpooled.wrappedBuffer(Cluster.resEncoder.encode(model.getTargetMethod().getReturnType().equals(Void.TYPE) ? CommonState.SUCCESS_NO_RES : CommonState.SUCCESS_RES,
+                    model.getTargetMethod().invoke(model.getTarget(), model.getTargetParams()),null)));
+        } catch (Exception ex) {
+            channel.writeAndFlush(Unpooled.wrappedBuffer(Cluster.resEncoder.encode(CommonState.EXCEPTION, null, ex.getMessage())));
+
         }
     }
 
