@@ -13,23 +13,24 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.lojoso.sudie.mesh.common.model.CommonData.SD_AFN_PUSH;
+import static org.lojoso.sudie.mesh.common.model.CommonData.CD_AFN;
 
 public class RequestDecoder implements ChainDecoder {
 
 
     @Override
     public List<? extends Dg> chainDecoder(List<Dg> data) {
-        return data.stream().filter(d -> Arrays.equals(d.getAfn(), SD_AFN_PUSH)).map(this::decode).collect(Collectors.toList());
+        return data.stream().filter(d -> Arrays.equals(d.getAfn(), CD_AFN)).map(this::decode).collect(Collectors.toList());
     }
 
     private RequestModel decode(Dg data) {
         RequestModel model = new RequestModel(data);
-        int clength = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 0, 2));
-        model.setClassName(new String(Arrays.copyOfRange(data.getBody(), 2, 2 + clength)));
-        int mlength = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 2 + clength, 2 + clength + 2));
-        model.setMethodName(new String(Arrays.copyOfRange(data.getBody(), 2 + clength + 2, 2 + clength + 2 + mlength)));
-        this.buildArgs(Arrays.copyOfRange(data.getBody(), 2 + clength + 2 + mlength, data.getBody().length), model);
+        model.setChannelIndex(DgTools.toShort(Arrays.copyOfRange(data.getBody(), 0, 2)));
+        int clength = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 2, 2 + 2));
+        model.setClassName(new String(Arrays.copyOfRange(data.getBody(), 2 + 2, 2 + 2 + clength)));
+        int mlength = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 2 + 2 + clength, 2 + 2 + clength + 2));
+        model.setMethodName(new String(Arrays.copyOfRange(data.getBody(), 2 + 2 + clength + 2, 2 + 2 + clength + 2 + mlength)));
+        this.buildArgs(Arrays.copyOfRange(data.getBody(), 2 + 2 + clength + 2 + mlength, data.getBody().length), model);
         return this.hitMatch(model);
     }
 

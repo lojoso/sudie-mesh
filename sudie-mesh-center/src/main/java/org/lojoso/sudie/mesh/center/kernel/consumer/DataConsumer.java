@@ -2,11 +2,10 @@ package org.lojoso.sudie.mesh.center.kernel.consumer;
 
 import io.netty.buffer.Unpooled;
 import org.lojoso.sudie.mesh.center.kernel.server.analysis.request.RequestModel;
-import org.lojoso.sudie.mesh.center.kernel.service.ServiceCache;
+import org.lojoso.sudie.mesh.center.kernel.server.ServiceCache;
 import org.lojoso.sudie.mesh.common.data.CoreDataQueue;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,7 +25,6 @@ public class DataConsumer {
         });
 
         count.addAndGet(target.size());
-        System.out.println(count.get());
         if(CoreDataQueue.count() != 0){
             requestProcess();
         }

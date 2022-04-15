@@ -1,4 +1,4 @@
-package org.lojoso.sudie.mesh.center.kernel.service;
+package org.lojoso.sudie.mesh.center.kernel.server;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
@@ -37,8 +37,7 @@ public class ServiceCache {
 
     public static void removeService(Channel channel){
         synchronized (lock){
-            String clazz = serviceMapping.remove(channel.id());
-            services.get(clazz).remove(channel);
+            Optional.ofNullable(serviceMapping.remove(channel.id())).ifPresent(clazz -> services.get(clazz).remove(channel));
         }
     }
 

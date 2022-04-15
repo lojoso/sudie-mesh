@@ -5,6 +5,7 @@ import io.netty.channel.ChannelId;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientCache {
@@ -32,9 +33,7 @@ public class ClientCache {
 
     public static void removeClient(Channel channel){
         synchronized (index){
-            String uuid = idMapping.remove(channel.id());
-            Integer index = clients.remove(uuid);
-            clientsMapping.remove(index);
+            Optional.ofNullable(idMapping.remove(channel.id())).map(clients::remove).ifPresent(clientsMapping::remove);
         }
     }
 

@@ -13,6 +13,8 @@ public class RequestModel extends Dg {
     private int argsCount;
     private List<byte[]> argsData;
 
+    private int channelIndex;
+
     private Object target;
     private Method targetMethod;
     private Object[] targetParams;
@@ -95,5 +97,13 @@ public class RequestModel extends Dg {
 
     public int getArgsCount() {
         return argsCount;
+    }
+
+    public int getChannelIndex() {
+        return channelIndex;
+    }
+
+    public void setChannelIndex(int channelIndex) {
+        this.channelIndex = channelIndex;
     }
 }
