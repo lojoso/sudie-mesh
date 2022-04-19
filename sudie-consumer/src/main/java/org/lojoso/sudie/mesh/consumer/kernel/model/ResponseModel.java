@@ -11,6 +11,8 @@ public class ResponseModel extends Dg {
     // 异常值
     private String expection;
 
+    private String server;
+
     private int seq;
     private Class<?> responseType;
 
@@ -66,5 +68,13 @@ public class ResponseModel extends Dg {
 
     public void setResponseType(Class<?> responseType) {
         this.responseType = responseType;
+    }
+
+    public String getServer() {
+        return server;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
     }
 }

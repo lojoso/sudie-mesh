@@ -14,4 +14,7 @@ public interface DefaultConfig {
     int LENBASED_DE_LEN_ADJUST = 0;
     int LENBASED_DE_MAX_LEN = 10240;
 
+    // ConsumerTimeOut 配置
+    int CONSUMER_TIMEOUT_SECONDS = 5;
+
 }

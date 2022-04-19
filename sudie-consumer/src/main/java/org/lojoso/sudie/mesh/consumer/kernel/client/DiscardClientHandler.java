@@ -57,7 +57,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
             List<ResponseModel> data = (List<ResponseModel>) msg;
-            data.forEach(e -> ClusterCache.release(e.getSeq(), e));
+            data.forEach(e -> ClusterCache.release(e.getSeq(), e, ctx.channel().id()));
 //            System.out.printf("%s :=> %s \n", ClusterCache.clusters.get(ctx.channel().id()), data);
         } finally {
             ctx.fireChannelRead(msg);

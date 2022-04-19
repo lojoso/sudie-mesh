@@ -6,5 +6,5 @@ public interface TestService extends BaseService {
 
     void sayHello(TUser user);
 
-    TUser userSayHello(String user, Integer seq);
+    TUser userSayHello(String user, int seq);
 }

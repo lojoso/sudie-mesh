@@ -93,6 +93,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
         try {
             channel.writeAndFlush(Unpooled.wrappedBuffer(Cluster.resEncoder.encode(model.getTargetMethod().getReturnType().equals(Void.TYPE) ? CommonState.SUCCESS_NO_RES : CommonState.SUCCESS_RES,
                     (short) model.getChannelIndex(), model.getTargetMethod().invoke(model.getTarget(), model.getTargetParams()), model.getSeq(), null)));
+            System.out.println("call method ....");
         } catch (Exception ex) {
             channel.writeAndFlush(Unpooled.wrappedBuffer(Cluster.resEncoder.encode(CommonState.EXCEPTION, (short) model.getChannelIndex(), null, model.getSeq(), ex.getMessage())));
         }

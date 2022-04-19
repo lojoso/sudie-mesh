@@ -2,6 +2,7 @@ package org.lojoso.sudie.mesh.consumer.kernel.client;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
+import org.lojoso.sudie.mesh.common.config.DefaultConfig;
 import org.lojoso.sudie.mesh.consumer.kernel.decoder.ResponseDecoder;
 import org.lojoso.sudie.mesh.consumer.kernel.model.ResponseModel;
 
@@ -27,7 +28,7 @@ public class ClusterCache {
         resTypeMapping.put(key, type);
         try {
             lock.lock();
-            resultWait.await(30, TimeUnit.SECONDS);
+            resultWait.await(DefaultConfig.CONSUMER_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             ResponseModel model = resMapping.remove(key);
             model.setResponseType(resTypeMapping.remove(key));
             return model;
@@ -39,9 +40,10 @@ public class ClusterCache {
         }
     }
 
-    public static void release(Integer key, ResponseModel res){
+    public static void release(Integer key, ResponseModel res, ChannelId id){
         try {
             lock.lock();
+            res.setServer(clusters.get(id));
             ClusterCache.resMapping.put(key, res);
             waitQueue.get(key).signalAll();
         }finally {

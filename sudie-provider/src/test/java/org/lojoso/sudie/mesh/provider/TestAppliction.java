@@ -33,7 +33,7 @@ public class TestAppliction {
         }
 
         @Override
-        public TUser userSayHello(String user, Integer seq) {
+        public TUser userSayHello(String user, int seq) {
             TUser u = new TUser();
             u.setUserName(user);
             u.setSeq(seq);

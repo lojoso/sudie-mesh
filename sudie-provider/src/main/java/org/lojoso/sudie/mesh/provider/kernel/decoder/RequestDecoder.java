@@ -1,5 +1,6 @@
 package org.lojoso.sudie.mesh.provider.kernel.decoder;
 
+import org.lojoso.sudie.mesh.common.config.NativeClassMapping;
 import org.lojoso.sudie.mesh.common.decode.decoder.ChainDecoder;
 import org.lojoso.sudie.mesh.common.encode.config.FastSerialization;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
@@ -11,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -66,7 +68,8 @@ public class RequestDecoder implements ChainDecoder {
 
     private boolean tryFst(byte[] data, Class<?> type) {
         try {
-            FastSerialization.getFstConfig(type).get().asObject(Arrays.copyOfRange(data, 0, data.length));
+            FastSerialization.getFstConfig(Optional.of(NativeClassMapping.mapping).map(m -> m.get(type)).orElse(type)).get()
+                    .asObject(Arrays.copyOfRange(data, 0, data.length));
             return true;
         } catch (Exception ex) {
             return false;
@@ -77,7 +80,7 @@ public class RequestDecoder implements ChainDecoder {
 
         Object[] params = new Object[types.length];
         for (int i = 0; i < types.length; i++) {
-            params[i] = FastSerialization.getFstConfig(types[i]).get().asObject(Arrays.copyOfRange(datas.get(i), 0, datas.get(i).length));
+            params[i] = FastSerialization.getFstConfig(Optional.ofNullable(NativeClassMapping.mapping.get(types[i])).orElse(types[i])).get().asObject(Arrays.copyOfRange(datas.get(i), 0, datas.get(i).length));
         }
         return params;
     }

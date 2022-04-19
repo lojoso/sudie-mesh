@@ -28,17 +28,22 @@ public class ConsumerProxy {
         @Override
         public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) {
             int seq = Cluster.seq.getAndAdd(1);
-            Cluster.randomChannel().writeAndFlush(Unpooled.wrappedBuffer(Cluster.reqEncoder.encode(method, objects, seq)));
-            ResponseModel model = ClusterCache.waiting(seq, method.getReturnType());
-            return Optional.ofNullable(model).map(ResponseModel::getState).map(s -> {
-                if(Objects.equals(s, CommonState.SUCCESS_NO_RES)){
-                    return null;
-                }else if(Objects.equals(s, CommonState.EXCEPTION)){
-                    throw new RuntimeException(FastSerialization.getFstConfig(String.class).get().asObject(model.getResponse()).toString());
-                }else {
-                    return FastSerialization.getFstConfig(model.getResponseType()).get().asObject(model.getResponse());
-                }
-            }).orElseThrow(() -> new RuntimeException("TIMEOUT"));
+            if(! Objects.equals(method.getDeclaringClass(), Object.class)){
+                System.out.printf("%s : %s\n",method.getDeclaringClass().getName(), method.getName());
+                Cluster.randomChannel().writeAndFlush(Unpooled.wrappedBuffer(Cluster.reqEncoder.encode(method, objects, seq)));
+                ResponseModel model = ClusterCache.waiting(seq, method.getReturnType());
+                return Optional.ofNullable(model).map(ResponseModel::getState).map(s -> {
+                    if(Objects.equals(s, CommonState.SUCCESS_NO_RES)){
+                        return null;
+                    }else if(Objects.equals(s, CommonState.EXCEPTION)){
+                        throw new RuntimeException(FastSerialization.getFstConfig(String.class).get().asObject(model.getResponse()).toString());
+                    }else {
+                        return FastSerialization.getFstConfig(model.getResponseType()).get().asObject(model.getResponse());
+                    }
+                }).orElseThrow(() -> new RuntimeException("TIMEOUT"));
+            }else {
+                return null;
+            }
         }
     }
 
