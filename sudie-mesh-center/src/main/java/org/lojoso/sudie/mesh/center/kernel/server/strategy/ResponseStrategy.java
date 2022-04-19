@@ -1,15 +1,18 @@
 package org.lojoso.sudie.mesh.center.kernel.server.strategy;
 
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import org.apache.commons.collections4.CollectionUtils;
+import org.lojoso.sudie.mesh.center.kernel.server.ClientCache;
 import org.lojoso.sudie.mesh.common.decode.strategy.DgStrategy;
+import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.lojoso.sudie.mesh.common.model.CommonData.CD_AFN_RES;
+import static org.lojoso.sudie.mesh.common.config.CommonData.CD_AFN_RES;
 
 public class ResponseStrategy implements DgStrategy {
 
@@ -24,6 +27,7 @@ public class ResponseStrategy implements DgStrategy {
     @Override
     public void doEncode(Channel channel) {
         // 接收返回值，需要回源client端
-        System.out.println(target);
+        target.forEach(e -> ClientCache.getChannel(DgTools.toShort(Arrays.copyOfRange(e.getBody(), 0, 2)))
+                .writeAndFlush(Unpooled.wrappedBuffer(e.rebuild())));
     }
 }

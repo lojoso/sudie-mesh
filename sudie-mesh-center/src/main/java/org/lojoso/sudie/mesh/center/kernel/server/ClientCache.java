@@ -23,6 +23,10 @@ public class ClientCache {
         return clients.get(idMapping.get(channel.id()));
     }
 
+    public static Channel getChannel(int index){
+        return clientsMapping.get(index);
+    }
+
     public static void initClient(String uuid, Channel channel){
         synchronized (index){
             idMapping.put(channel.id(), uuid);

@@ -1,4 +1,4 @@
-package org.lojoso.sudie.mesh.center.kernel.server.analysis.response;
+package org.lojoso.sudie.mesh.consumer.kernel.model;
 
 import org.lojoso.sudie.mesh.common.model.CommonState;
 import org.lojoso.sudie.mesh.common.model.Dg;
@@ -7,9 +7,12 @@ public class ResponseModel extends Dg {
 
     private CommonState state;
     // 返回值
-    private Object response;
+    private byte[] response;
     // 异常值
     private String expection;
+
+    private int seq;
+    private Class<?> responseType;
 
     public ResponseModel(){
 
@@ -33,11 +36,11 @@ public class ResponseModel extends Dg {
         this.state = state;
     }
 
-    public Object getResponse() {
+    public byte[] getResponse() {
         return response;
     }
 
-    public void setResponse(Object response) {
+    public void setResponse(byte[] response) {
         this.response = response;
     }
 
@@ -47,5 +50,21 @@ public class ResponseModel extends Dg {
 
     public void setExpection(String expection) {
         this.expection = expection;
+    }
+
+    public int getSeq() {
+        return seq;
+    }
+
+    public void setSeq(int seq) {
+        this.seq = seq;
+    }
+
+    public Class<?> getResponseType() {
+        return responseType;
+    }
+
+    public void setResponseType(Class<?> responseType) {
+        this.responseType = responseType;
     }
 }

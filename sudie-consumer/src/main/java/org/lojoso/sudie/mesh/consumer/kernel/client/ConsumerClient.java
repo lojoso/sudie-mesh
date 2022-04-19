@@ -6,10 +6,12 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.lojoso.sudie.mesh.common.config.DefaultConfig;
+import org.lojoso.sudie.mesh.common.decode.decoder.DgDecoder;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -26,7 +28,8 @@ public class ConsumerClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         // 5s 无写操作-开始心跳
-                        ch.pipeline().addLast(new IdleStateHandler(0, 30, 0, TimeUnit.MINUTES))
+                        ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(DefaultConfig.LENBASED_DE_MAX_LEN, DefaultConfig.LENBASED_DE_OFFSET, DefaultConfig.LENBASED_DE_LEN,DefaultConfig.LENBASED_DE_LEN_ADJUST,0))
+                                .addLast(new DgDecoder()).addLast(new IdleStateHandler(0, DefaultConfig.CLIENT_HB_SECONDS, 0, TimeUnit.SECONDS))
                                 .addLast(new DiscardClientHandler());
                     }
                 });
@@ -47,7 +50,7 @@ public class ConsumerClient {
         bootstrap.connect(args[0], Integer.parseInt(args[1])).addListener((ChannelFutureListener) channelFuture -> {
             if (channelFuture.isSuccess()) {
                 DiscardClientHandler handler = channelFuture.channel().pipeline().get(DiscardClientHandler.class);
-                handler.setEncoder(Cluster.encoder);
+                handler.setEncoder(Cluster.regEncoder);
 
                 Optional.ofNullable(count).ifPresent(CountDownLatch::countDown);
                 channelFuture.channel().pipeline().get(DiscardClientHandler.class).setServer(server);

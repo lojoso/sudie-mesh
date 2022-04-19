@@ -23,13 +23,21 @@ public class TestAppliction {
     public static class MyService implements TestService{
 
         @Override
-        public void sayHello(String name, String world) {
-            System.out.printf("%s say：%s \n", name, world);
+        public String sayHello(String name, String world) {
+            return String.format("%s say：%s \n", name, world);
         }
 
         @Override
         public void sayHello(TUser user) {
             System.out.printf("my name is %s \n", user.getUserName());
+        }
+
+        @Override
+        public TUser userSayHello(String user, Integer seq) {
+            TUser u = new TUser();
+            u.setUserName(user);
+            u.setSeq(seq);
+            return u;
         }
     }
 }

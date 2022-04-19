@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.lojoso.sudie.mesh.common.model.CommonData.CD_AFN_REG;
+import static org.lojoso.sudie.mesh.common.config.CommonData.CD_AFN_REG;
 
 public class ProviderRegStrategy implements DgStrategy {
 

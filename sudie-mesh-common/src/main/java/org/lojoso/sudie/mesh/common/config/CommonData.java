@@ -1,4 +1,4 @@
-package org.lojoso.sudie.mesh.common.model;
+package org.lojoso.sudie.mesh.common.config;
 
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
@@ -6,12 +6,8 @@ import java.time.ZoneOffset;
 
 public interface CommonData {
 
-    // 报文头
-    byte[] HEAD = { 0x68 };
     // 心跳AFN
     byte[] HB_AFN = { 0x00 };
-    // 心跳长度
-    byte[] HB_LEN = { 0x00, 0x08 };
 
     /**
      * From客户端 - 消息产生(服务调用)

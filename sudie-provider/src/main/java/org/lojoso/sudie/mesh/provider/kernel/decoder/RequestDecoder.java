@@ -4,16 +4,17 @@ import org.lojoso.sudie.mesh.common.decode.decoder.ChainDecoder;
 import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
 import org.lojoso.sudie.mesh.common.encode.config.FastSerialization;
 import org.lojoso.sudie.mesh.common.model.Dg;
+import org.lojoso.sudie.mesh.common.model.provider.RequestModel;
 import org.lojoso.sudie.mesh.provider.kernel.client.ClusterCache;
-import org.lojoso.sudie.mesh.provider.kernel.data.RequestModel;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.lojoso.sudie.mesh.common.model.CommonData.CD_AFN;
+import static org.lojoso.sudie.mesh.common.config.CommonData.CD_AFN;
 
 public class RequestDecoder implements ChainDecoder {
 
@@ -26,11 +27,12 @@ public class RequestDecoder implements ChainDecoder {
     private RequestModel decode(Dg data) {
         RequestModel model = new RequestModel(data);
         model.setChannelIndex(DgTools.toShort(Arrays.copyOfRange(data.getBody(), 0, 2)));
-        int clength = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 2, 2 + 2));
-        model.setClassName(new String(Arrays.copyOfRange(data.getBody(), 2 + 2, 2 + 2 + clength)));
-        int mlength = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 2 + 2 + clength, 2 + 2 + clength + 2));
-        model.setMethodName(new String(Arrays.copyOfRange(data.getBody(), 2 + 2 + clength + 2, 2 + 2 + clength + 2 + mlength)));
-        this.buildArgs(Arrays.copyOfRange(data.getBody(), 2 + 2 + clength + 2 + mlength, data.getBody().length), model);
+        model.setSeq(ByteBuffer.wrap(Arrays.copyOfRange(data.getBody(), 2, 2 + 4)).getInt());
+        int clength = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 2 + 4, 2 + 4 + 2));
+        model.setClassName(new String(Arrays.copyOfRange(data.getBody(), 2 + 4 + 2, 2 + 4 + 2 + clength)));
+        int mlength = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 2 + 4 + 2 + clength, 2 + 4 + 2 + clength + 2));
+        model.setMethodName(new String(Arrays.copyOfRange(data.getBody(), 2 + 4 + 2 + clength + 2, 2 + 4 + 2 + clength + 2 + mlength)));
+        this.buildArgs(Arrays.copyOfRange(data.getBody(), 2 + 4 + 2 + clength + 2 + mlength, data.getBody().length), model);
         return this.hitMatch(model);
     }
 

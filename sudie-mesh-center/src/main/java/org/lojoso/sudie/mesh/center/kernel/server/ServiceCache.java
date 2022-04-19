@@ -3,6 +3,7 @@ package org.lojoso.sudie.mesh.center.kernel.server;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueue;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,9 +18,11 @@ public class ServiceCache {
 
     public static Channel randomChannel(String service){
         LinkedList<Channel> linkedList = services.get(service);
-        linkedList.forEach(c -> Optional.of(c).filter(((Predicate<? super Channel>) Channel::isActive).negate())
-                .ifPresent(linkedList::remove));
-        return linkedList.get((int) (Math.random() * linkedList.size()));
+        return Optional.ofNullable(linkedList).filter(CollectionUtils::isNotEmpty).map(l -> {
+            l.forEach(c -> Optional.of(c).filter(((Predicate<? super Channel>) Channel::isActive).negate())
+                    .ifPresent(l::remove));
+            return l.get((int) (Math.random() * l.size()));
+        }).orElse(null);
     }
 
     public static void initService(String clazz, Channel channel){

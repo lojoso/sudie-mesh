@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.lojoso.sudie.mesh.common.model.CommonData.*;
+import static org.lojoso.sudie.mesh.common.config.CommonData.*;
 
 // 客户端请求
 public class ClientStrategy implements DgStrategy {

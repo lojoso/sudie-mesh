@@ -6,8 +6,11 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.AbstractEventExecutorGroup;
+import org.lojoso.sudie.mesh.common.config.DefaultConfig;
 import org.lojoso.sudie.mesh.common.decode.decoder.DgDecoder;
 
 import java.io.Closeable;
@@ -27,7 +30,9 @@ public class ClusterKernelPool implements Closeable {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         // 5s 无写操作-开始心跳
-                        ch.pipeline().addLast(new DgDecoder()).addLast(new IdleStateHandler(0,60, 0, TimeUnit.SECONDS))
+                        ch.pipeline()
+                                .addLast(new LengthFieldBasedFrameDecoder(DefaultConfig.LENBASED_DE_MAX_LEN, DefaultConfig.LENBASED_DE_OFFSET, DefaultConfig.LENBASED_DE_LEN,DefaultConfig.LENBASED_DE_LEN_ADJUST,0))
+                                .addLast(new DgDecoder()).addLast(new IdleStateHandler(0,DefaultConfig.CLIENT_HB_SECONDS, 0, TimeUnit.SECONDS))
                                 .addLast(new DiscardClientHandler(ClusterCache.clusters));
                     }
                 });

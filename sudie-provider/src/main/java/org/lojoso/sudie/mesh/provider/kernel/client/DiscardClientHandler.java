@@ -5,21 +5,16 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
-import org.lojoso.sudie.mesh.common.encode.encoder.ProviderEncoder;
+import org.lojoso.sudie.mesh.common.encode.encoder.ProviderRegistryEncoder;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.CommonState;
-import org.lojoso.sudie.mesh.provider.kernel.data.RequestModel;
+import org.lojoso.sudie.mesh.common.model.provider.RequestModel;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static io.netty.handler.timeout.IdleState.WRITER_IDLE;
 
@@ -29,9 +24,9 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     private Class<?>[] classes;
-    private ProviderEncoder encoder;
+    private ProviderRegistryEncoder encoder;
 
-    public DiscardClientHandler(){
+    public DiscardClientHandler() {
     }
 
     public Class<?>[] getClasses() {
@@ -42,11 +37,11 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
         this.classes = classes;
     }
 
-    public ProviderEncoder getEncoder() {
+    public ProviderRegistryEncoder getEncoder() {
         return encoder;
     }
 
-    public void setEncoder(ProviderEncoder encoder) {
+    public void setEncoder(ProviderRegistryEncoder encoder) {
         this.encoder = encoder;
     }
 
@@ -68,7 +63,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ClusterCache.clusterMapping.put(server, ctx.channel());
         // 注册到cluser-center
-        
+
         Arrays.stream(classes).forEach(e -> RegHandler.regToCluster(ctx.channel(), encoder.encode(e)));
         System.out.printf("server: [ %s ] connected ... \n", server);
         ctx.fireChannelActive();
@@ -94,13 +89,12 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void requestExecutor(RequestModel model, Channel channel){
+    private void requestExecutor(RequestModel model, Channel channel) {
         try {
-            System.out.printf("from [ %s ] ", ClusterCache.clusters.get(model.getId()));
             channel.writeAndFlush(Unpooled.wrappedBuffer(Cluster.resEncoder.encode(model.getTargetMethod().getReturnType().equals(Void.TYPE) ? CommonState.SUCCESS_NO_RES : CommonState.SUCCESS_RES,
-                    (short) model.getChannelIndex(), model.getTargetMethod().invoke(model.getTarget(), model.getTargetParams()),null)));
+                    (short) model.getChannelIndex(), model.getTargetMethod().invoke(model.getTarget(), model.getTargetParams()), model.getSeq(), null)));
         } catch (Exception ex) {
-            channel.writeAndFlush(Unpooled.wrappedBuffer(Cluster.resEncoder.encode(CommonState.EXCEPTION, (short) model.getChannelIndex(),null, ex.getMessage())));
+            channel.writeAndFlush(Unpooled.wrappedBuffer(Cluster.resEncoder.encode(CommonState.EXCEPTION, (short) model.getChannelIndex(), null, model.getSeq(), ex.getMessage())));
         }
     }
 
@@ -115,7 +109,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
             if (Objects.equals(((IdleStateEvent) evt).state(), WRITER_IDLE)) {
                 ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(CommonMethod.toHeartbeat()));
             }
-        }else {
+        } else {
             super.userEventTriggered(ctx, evt);
         }
     }

@@ -1,6 +1,6 @@
 package org.lojoso.sudie.mesh.common.encode.encoder;
 
-import org.lojoso.sudie.mesh.common.model.CommonData;
+import org.lojoso.sudie.mesh.common.config.CommonData;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.tsvc.BaseService;
 
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ProviderEncoder{
+public class ProviderRegistryEncoder {
 
     public byte[] encode(Class<?>... classes) {
         int total = 0;
@@ -29,12 +29,10 @@ public class ProviderEncoder{
         }
         byte[] data = bodyBuffer.array();
 
-        // head + afn + length + crc + body{len(2) + class, len(2) + class}
-        ByteBuffer wholeBuffer = ByteBuffer.allocate(1 + 1 + 2 + 1 + data.length);
-        wholeBuffer.put(CommonData.HEAD);
+        // afn + length + body{len(2) + class, len(2) + class}
+        ByteBuffer wholeBuffer = ByteBuffer.allocate(1 + 2 + data.length);
         wholeBuffer.put(CommonData.CD_AFN_REG);
         wholeBuffer.putShort((short) data.length);
-        wholeBuffer.put(CommonMethod.crcCheck(data));
         wholeBuffer.put(data);
 
         return wholeBuffer.array();

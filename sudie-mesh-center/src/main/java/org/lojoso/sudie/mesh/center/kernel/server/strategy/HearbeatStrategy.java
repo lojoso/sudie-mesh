@@ -9,7 +9,7 @@ import org.lojoso.sudie.mesh.common.model.Dg;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.lojoso.sudie.mesh.common.model.CommonData.HB_AFN;
+import static org.lojoso.sudie.mesh.common.config.CommonData.HB_AFN;
 
 // 心跳处理
 public class HearbeatStrategy implements DgStrategy {

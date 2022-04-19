@@ -2,7 +2,9 @@ package org.lojoso.sudie.mesh.common.tsvc;
 
 public interface TestService extends BaseService {
 
-    void sayHello(String name, String world);
+    String sayHello(String name, String world);
 
     void sayHello(TUser user);
+
+    TUser userSayHello(String user, Integer seq);
 }

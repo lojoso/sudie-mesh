@@ -25,13 +25,10 @@ public class RegistryModel extends Dg {
 
     public RegistryModel(Dg dg) {
         super.setId(dg.getId());
-        super.setBroken(dg.getBroken());
         super.setTotal(dg.getTotal());
         // payload
-        super.setHead(dg.getHead());
         super.setAfn(dg.getAfn());
         super.setLength(dg.getLength());
-        super.setCrc(dg.getCrc());
         super.setBody(dg.getBody());
 
         this.classNames = new ArrayList<>();

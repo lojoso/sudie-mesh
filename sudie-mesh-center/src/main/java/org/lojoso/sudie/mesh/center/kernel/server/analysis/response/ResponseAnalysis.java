@@ -20,9 +20,10 @@ public class ResponseAnalysis implements Analysis<ResponseModel> {
     }
 
     private ResponseModel decode(Dg data){
-        // state + length + body
+        // client + state + length + body
         ResponseModel model = new ResponseModel(data);
-        CommonState state = CommonState.getByCode(DgTools.toShort(Arrays.copyOfRange(data.getBody(), 0, 1)));
+        int channelIndex = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 0, 2));
+        CommonState state = CommonState.getByCode(DgTools.toShort(Arrays.copyOfRange(data.getBody(), 2, 2 + 1)));
         model.setState(state);
         if(Objects.equals(state, CommonState.SUCCESS_NO_RES)){
             return model;
@@ -32,7 +33,6 @@ public class ResponseAnalysis implements Analysis<ResponseModel> {
                 model.setExpection(new String(Arrays.copyOfRange(data.getBody(), 1 + 2, 1 + 2 + length), StandardCharsets.UTF_8));
                 return model;
             }else {
-//                model.setResponse();
                 return model;
             }
         }

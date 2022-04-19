@@ -4,9 +4,11 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
-import org.lojoso.sudie.mesh.common.encode.encoder.ConsumerEncoder;
+import org.lojoso.sudie.mesh.common.encode.encoder.ConsumerRegistryEncoder;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
+import org.lojoso.sudie.mesh.consumer.kernel.model.ResponseModel;
 
+import java.util.List;
 import java.util.Objects;
 
 import static io.netty.handler.timeout.IdleState.WRITER_IDLE;
@@ -14,7 +16,7 @@ import static io.netty.handler.timeout.IdleState.WRITER_IDLE;
 public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
 
     private String server;
-    private ConsumerEncoder encoder;
+    private ConsumerRegistryEncoder encoder;
 
     public DiscardClientHandler(){
     }
@@ -37,7 +39,7 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ClusterCache.clusterMapping.put(server, ctx.channel());
         // todo: 注册到cluser-center
-        ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(encoder.cliEncode(Cluster.uuid)));
+        ctx.channel().writeAndFlush(Unpooled.wrappedBuffer(encoder.encode(Cluster.uuid)));
         System.out.printf("server: [ %s ] connected ... \n", server);
         ctx.fireChannelActive();
     }
@@ -54,7 +56,8 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
     @SuppressWarnings("unchecked")
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
-//            List<Dg> data = (List<Dg>) msg;
+            List<ResponseModel> data = (List<ResponseModel>) msg;
+            data.forEach(e -> ClusterCache.release(e.getSeq(), e));
 //            System.out.printf("%s :=> %s \n", ClusterCache.clusters.get(ctx.channel().id()), data);
         } finally {
             ctx.fireChannelRead(msg);
@@ -88,11 +91,11 @@ public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
         cause.printStackTrace();
     }
 
-    public ConsumerEncoder getEncoder() {
+    public ConsumerRegistryEncoder getEncoder() {
         return encoder;
     }
 
-    public void setEncoder(ConsumerEncoder encoder) {
+    public void setEncoder(ConsumerRegistryEncoder encoder) {
         this.encoder = encoder;
     }
 }

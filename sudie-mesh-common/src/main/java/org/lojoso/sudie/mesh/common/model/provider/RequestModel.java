@@ -1,4 +1,4 @@
-package org.lojoso.sudie.mesh.provider.kernel.data;
+package org.lojoso.sudie.mesh.common.model.provider;
 
 import org.lojoso.sudie.mesh.common.model.Dg;
 
@@ -18,6 +18,7 @@ public class RequestModel extends Dg {
     private Object target;
     private Method targetMethod;
     private Object[] targetParams;
+    private int seq;
 
 
 
@@ -69,6 +70,14 @@ public class RequestModel extends Dg {
         this.targetParams = targetParams;
     }
 
+    public int getSeq() {
+        return seq;
+    }
+
+    public void setSeq(int seq) {
+        this.seq = seq;
+    }
+
     public RequestModel() {
         this.argsCount = 0;
         this.argsData = new ArrayList<>();
@@ -76,14 +85,11 @@ public class RequestModel extends Dg {
 
     public RequestModel(Dg dg) {
         super.setId(dg.getId());
-        super.setBroken(dg.getBroken());
-        super.setTotal(dg.getTotal());
         // payload
-        super.setHead(dg.getHead());
         super.setAfn(dg.getAfn());
         super.setLength(dg.getLength());
-        super.setCrc(dg.getCrc());
         super.setBody(dg.getBody());
+        super.setTotal(dg.getTotal());
 
         this.argsCount = 0;
         this.argsData = new ArrayList<>();

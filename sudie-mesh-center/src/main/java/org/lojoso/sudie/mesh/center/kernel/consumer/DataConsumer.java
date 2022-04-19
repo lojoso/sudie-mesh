@@ -1,6 +1,9 @@
 package org.lojoso.sudie.mesh.center.kernel.consumer;
 
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import org.apache.commons.codec.binary.Hex;
 import org.lojoso.sudie.mesh.center.kernel.server.analysis.request.RequestModel;
 import org.lojoso.sudie.mesh.center.kernel.server.ServiceCache;
 import org.lojoso.sudie.mesh.common.data.CoreDataQueue;
@@ -17,7 +20,15 @@ public class DataConsumer {
     public static void requestProcess(){
         List<? super Dg> target = CoreDataQueue.getRequest(1000);
         target.stream().map(e -> (RequestModel) e).forEach(e -> {
-            Optional.ofNullable(ServiceCache.randomChannel(e.getClassName())).map(c -> c.writeAndFlush(Unpooled.wrappedBuffer(e.rebuild())))
+            Optional.ofNullable(ServiceCache.randomChannel(e.getClassName())).map(c -> {
+                        ChannelFuture channelFuture = c.writeAndFlush(Unpooled.wrappedBuffer(e.rebuild()));
+                        channelFuture.addListener((ChannelFutureListener) future -> {
+                            if(!future.isSuccess()){
+                                System.out.println(future.cause().getMessage());
+                            }
+                        });
+                        return channelFuture;
+                    })
                     .orElseGet(() -> {
 //                        CoreDataQueue.addRequest(e);
                         return null;

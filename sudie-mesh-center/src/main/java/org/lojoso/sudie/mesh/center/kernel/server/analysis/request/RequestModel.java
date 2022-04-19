@@ -1,6 +1,7 @@
 package org.lojoso.sudie.mesh.center.kernel.server.analysis.request;
 
 import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
+import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.nio.ByteBuffer;
@@ -57,14 +58,12 @@ public class RequestModel extends Dg {
 
     public RequestModel(Dg dg) {
         super.setId(dg.getId());
-        super.setBroken(dg.getBroken());
-        super.setTotal(dg.getTotal());
         // payload
-        super.setHead(dg.getHead());
         super.setAfn(dg.getAfn());
         super.setLength(dg.getLength());
-        super.setCrc(dg.getCrc());
         super.setBody(dg.getBody());
+
+        super.setTotal(dg.getTotal());
 
         this.argsCount = 0;
         this.argsData = new ArrayList<>();
@@ -72,17 +71,20 @@ public class RequestModel extends Dg {
 
     public byte[] rebuild() {
         ByteBuffer buffer = ByteBuffer.allocate(super.getTotal());
-        Optional.ofNullable(super.getHead()).ifPresent(buffer::put);
         Optional.ofNullable(super.getAfn()).ifPresent(buffer::put);
         Optional.ofNullable(super.getLength()).ifPresent(bytes -> {
             ByteBuffer nLength = ByteBuffer.allocate(2);
             nLength.putShort((short) (DgTools.toShort(super.getLength()) + 2));
             buffer.put(nLength.array());
         });
-        Optional.ofNullable(super.getCrc()).ifPresent(buffer::put);
         Optional.ofNullable(super.getBody()).ifPresent(bytes -> {
-            buffer.putShort((short) channelIndex);
-            buffer.put(bytes);
+
+            ByteBuffer newBody = ByteBuffer.allocate(2 + bytes.length);
+            newBody.putShort((short) channelIndex);
+            newBody.put(bytes);
+            // new CRC
+            // new Body
+            buffer.put(newBody.array());
         });
         return buffer.array();
     }

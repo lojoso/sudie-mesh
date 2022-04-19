@@ -5,6 +5,9 @@ import org.lojoso.sudie.mesh.common.tsvc.TestService;
 import org.lojoso.sudie.mesh.provider.kernel.client.ClusterCache;
 import org.lojoso.sudie.mesh.provider.kernel.client.ProviderClient;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
 public class MeshProvider {
@@ -15,16 +18,24 @@ public class MeshProvider {
         LockSupport.park();
     }
 
-    public static class MyService implements TestService{
+    public static class MyService implements TestService {
 
         @Override
-        public void sayHello(String name, String world) {
-            System.out.printf("%s say：%s \n", name, world);
+        public String sayHello(String name, String world) {
+            return String.format("%s say：%s", name, world);
         }
 
         @Override
         public void sayHello(TUser user) {
             System.out.printf("my name is %s \n", user.getUserName());
+        }
+
+        @Override
+        public TUser userSayHello(String user, Integer seq) {
+            TUser u = new TUser();
+            u.setUserName(user);
+            u.setSeq(seq);
+            return u;
         }
     }
 }

@@ -10,11 +10,8 @@ public class ConsumerDg extends Dg implements Serializable {
 
     public ConsumerDg(Dg parent){
         super.setId(parent.getId());
-        super.setBroken(parent.getBroken());
-        super.setHead(parent.getHead());
         super.setAfn(parent.getAfn());
         super.setLength(parent.getLength());
-        super.setCrc(parent.getCrc());
         super.setBody(parent.getBody());
     }
 
