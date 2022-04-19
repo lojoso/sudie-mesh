@@ -36,7 +36,7 @@ public class ConsumerProxy {
                     if(Objects.equals(s, CommonState.SUCCESS_NO_RES)){
                         return null;
                     }else if(Objects.equals(s, CommonState.EXCEPTION)){
-                        throw new RuntimeException(FastSerialization.getFstConfig(String.class).get().asObject(model.getResponse()).toString());
+                        throw new RuntimeException(model.getExpection());
                     }else {
                         return FastSerialization.getFstConfig(model.getResponseType()).get().asObject(model.getResponse());
                     }

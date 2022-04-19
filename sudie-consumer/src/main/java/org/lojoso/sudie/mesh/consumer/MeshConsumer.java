@@ -16,14 +16,20 @@ public class MeshConsumer {
 
     public static void main(String[] args) throws InterruptedException {
         ConsumerClient.startCluster(FlagArgs.getValue(args, "-s", "localhost:60001"));
-        Executors.newScheduledThreadPool(5).scheduleWithFixedDelay(() -> {
-            try {
-                System.out.println(ConsumerProxy.getProxy(TestService.class).sayHello("我", String.valueOf(Math.random())));
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }
-        }, 1, 100, TimeUnit.MILLISECONDS);
+        try {
+            System.out.println(ConsumerProxy.getProxy(TestService.class).sayHello("我", String.valueOf(Math.random())));
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
 
+//        Executors.newScheduledThreadPool(5).scheduleWithFixedDelay(() -> {
+//            try {
+//                System.out.println(ConsumerProxy.getProxy(TestService.class).sayHello("我", String.valueOf(Math.random())));
+//            }catch (Exception ex){
+//                ex.printStackTrace();
+//            }
+//        }, 1, 100, TimeUnit.MILLISECONDS);
+//
         Executors.newScheduledThreadPool(5).scheduleWithFixedDelay(() -> {
             try {
                 System.out.println(ConsumerProxy.getProxy(TestService.class).userSayHello("我"+ Math.random(), Cluster.seq.get()));

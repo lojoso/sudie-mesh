@@ -22,7 +22,8 @@ public class MeshProvider {
 
         @Override
         public String sayHello(String name, String world) {
-            return String.format("%s say：%s", name, world);
+            throw new RuntimeException("异常了");
+//            return String.format("%s say：%s", name, world);
         }
 
         @Override
