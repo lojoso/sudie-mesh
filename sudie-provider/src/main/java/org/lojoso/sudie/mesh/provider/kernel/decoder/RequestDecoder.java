@@ -1,8 +1,8 @@
 package org.lojoso.sudie.mesh.provider.kernel.decoder;
 
 import org.lojoso.sudie.mesh.common.decode.decoder.ChainDecoder;
-import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
 import org.lojoso.sudie.mesh.common.encode.config.FastSerialization;
+import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.Dg;
 import org.lojoso.sudie.mesh.common.model.provider.RequestModel;
 import org.lojoso.sudie.mesh.provider.kernel.client.ClusterCache;
@@ -26,11 +26,11 @@ public class RequestDecoder implements ChainDecoder {
 
     private RequestModel decode(Dg data) {
         RequestModel model = new RequestModel(data);
-        model.setChannelIndex(DgTools.toShort(Arrays.copyOfRange(data.getBody(), 0, 2)));
+        model.setChannelIndex(CommonMethod.toShort(Arrays.copyOfRange(data.getBody(), 0, 2)));
         model.setSeq(ByteBuffer.wrap(Arrays.copyOfRange(data.getBody(), 2, 2 + 4)).getInt());
-        int clength = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 2 + 4, 2 + 4 + 2));
+        int clength = CommonMethod.toShort(Arrays.copyOfRange(data.getBody(), 2 + 4, 2 + 4 + 2));
         model.setClassName(new String(Arrays.copyOfRange(data.getBody(), 2 + 4 + 2, 2 + 4 + 2 + clength)));
-        int mlength = DgTools.toShort(Arrays.copyOfRange(data.getBody(), 2 + 4 + 2 + clength, 2 + 4 + 2 + clength + 2));
+        int mlength = CommonMethod.toShort(Arrays.copyOfRange(data.getBody(), 2 + 4 + 2 + clength, 2 + 4 + 2 + clength + 2));
         model.setMethodName(new String(Arrays.copyOfRange(data.getBody(), 2 + 4 + 2 + clength + 2, 2 + 4 + 2 + clength + 2 + mlength)));
         this.buildArgs(Arrays.copyOfRange(data.getBody(), 2 + 4 + 2 + clength + 2 + mlength, data.getBody().length), model);
         return this.hitMatch(model);
@@ -38,7 +38,7 @@ public class RequestDecoder implements ChainDecoder {
 
     private RequestModel buildArgs(byte[] data, RequestModel model) {
         if (data.length > 0) {
-            int length = DgTools.toShort(Arrays.copyOfRange(data, 0, 2));
+            int length = CommonMethod.toShort(Arrays.copyOfRange(data, 0, 2));
             model.addArgs(Arrays.copyOfRange(data, 2, 2 + length));
             return buildArgs(Arrays.copyOfRange(data, 2 + length, data.length), model);
         } else {

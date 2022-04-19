@@ -10,14 +10,13 @@ public interface CommonMethod {
 
     byte[] HB_LEN = { 0x00, 0x08 };
 
-//    static byte[] crcCheck(byte[] bytes){
-//        byte result = (byte) 0x00;
-//        for (byte b : bytes) {
-//            result = (byte) (result ^ b);
-//        }
-//        return new byte[]{result};
-//    }
+    static int toShort(byte[] bytes){
+        return (ByteBuffer.wrap(bytes).getShort() & 0xffff);
+    }
 
+    static int toByte(byte[] bytes){
+        return bytes[0];
+    }
 
     static byte[] toHeartbeat(){
         byte[] time = currentTime();

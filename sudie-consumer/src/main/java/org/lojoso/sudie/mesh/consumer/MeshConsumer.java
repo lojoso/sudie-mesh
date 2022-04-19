@@ -21,9 +21,9 @@ public class MeshConsumer {
 //        Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(() -> {
 //            System.out.println(ConsumerProxy.getProxy(TestService.class).sayHello("我", String.valueOf(Math.random())));
 //        }, 1, 100, TimeUnit.MILLISECONDS);
-        Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(() -> {
+        Executors.newScheduledThreadPool(5).scheduleWithFixedDelay(() -> {
             System.out.println(ConsumerProxy.getProxy(TestService.class).userSayHello("我"+ Math.random(), Cluster.seq.get()));
-        }, 1, 100, TimeUnit.MILLISECONDS);
+        }, 1, 10, TimeUnit.MILLISECONDS);
         LockSupport.park();
 
     }

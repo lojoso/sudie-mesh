@@ -1,10 +1,8 @@
-package org.lojoso.sudie.mesh.center.kernel.server.analysis.registry;
+package org.lojoso.sudie.mesh.common.model.analysis.registry;
 
 import org.lojoso.sudie.mesh.common.model.Dg;
-import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RegistryModel extends Dg {

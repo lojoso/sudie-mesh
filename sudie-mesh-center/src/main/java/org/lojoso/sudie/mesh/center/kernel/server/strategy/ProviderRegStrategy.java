@@ -4,10 +4,10 @@ import io.netty.channel.Channel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.lojoso.sudie.mesh.center.kernel.server.analysis.Analysis;
 import org.lojoso.sudie.mesh.center.kernel.server.analysis.registry.RegistryAnalysis;
-import org.lojoso.sudie.mesh.center.kernel.server.analysis.registry.RegistryModel;
 import org.lojoso.sudie.mesh.center.kernel.server.ServiceCache;
 import org.lojoso.sudie.mesh.common.decode.strategy.DgStrategy;
 import org.lojoso.sudie.mesh.common.model.Dg;
+import org.lojoso.sudie.mesh.common.model.analysis.registry.RegistryModel;
 
 import java.util.Arrays;
 import java.util.List;

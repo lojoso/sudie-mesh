@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
@@ -59,7 +58,7 @@ public class DgDecoder extends ByteToMessageDecoder {
         // 2 == Length.length
         byte[] length = Arrays.copyOfRange(payload, 1, 1 + 2);
         // 1 == crc.length
-        byte[] body = Arrays.copyOfRange(payload, 1 + 2, Math.min(1 + 2 + DgTools.toShort(length), payload.length));
+        byte[] body = Arrays.copyOfRange(payload, 1 + 2, Math.min(1 + 2 + CommonMethod.toShort(length), payload.length));
 
         result.add(new Dg(id, afn, length, body));
     }

@@ -5,7 +5,7 @@ import io.netty.channel.Channel;
 import org.apache.commons.collections4.CollectionUtils;
 import org.lojoso.sudie.mesh.center.kernel.server.ClientCache;
 import org.lojoso.sudie.mesh.common.decode.strategy.DgStrategy;
-import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
+import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.Arrays;
@@ -27,7 +27,7 @@ public class ResponseStrategy implements DgStrategy {
     @Override
     public void doEncode(Channel channel) {
         // 接收返回值，需要回源client端
-        target.forEach(e -> ClientCache.getChannel(DgTools.toShort(Arrays.copyOfRange(e.getBody(), 0, 2)))
+        target.forEach(e -> ClientCache.getChannel(CommonMethod.toShort(Arrays.copyOfRange(e.getBody(), 0, 2)))
                 .writeAndFlush(Unpooled.wrappedBuffer(e.rebuild())));
     }
 }

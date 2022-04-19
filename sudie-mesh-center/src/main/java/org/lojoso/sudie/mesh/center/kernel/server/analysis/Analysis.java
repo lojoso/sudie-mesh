@@ -1,6 +1,5 @@
 package org.lojoso.sudie.mesh.center.kernel.server.analysis;
 
-import org.lojoso.sudie.mesh.center.kernel.server.analysis.request.RequestModel;
 import org.lojoso.sudie.mesh.common.model.Dg;
 
 import java.util.List;

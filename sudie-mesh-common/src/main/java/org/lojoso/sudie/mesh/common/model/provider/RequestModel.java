@@ -1,15 +1,14 @@
 package org.lojoso.sudie.mesh.common.model.provider;
 
 import org.lojoso.sudie.mesh.common.model.Dg;
+import org.lojoso.sudie.mesh.common.model.analysis.request.RequestBase;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RequestModel extends Dg {
+public class RequestModel extends RequestBase {
 
-    private String className;
-    private String methodName;
     private int argsCount;
     private List<byte[]> argsData;
 
@@ -20,23 +19,6 @@ public class RequestModel extends Dg {
     private Object[] targetParams;
     private int seq;
 
-
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public String getMethodName() {
-        return methodName;
-    }
-
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
-    }
 
     public List<byte[]> getArgsData() {
         return argsData;
@@ -95,10 +77,9 @@ public class RequestModel extends Dg {
         this.argsData = new ArrayList<>();
     }
 
-    public RequestModel addArgs(byte[] obj){
+    public void addArgs(byte[] obj){
         this.argsCount += 1;
         this.argsData.add(obj);
-        return this;
     }
 
     public int getArgsCount() {

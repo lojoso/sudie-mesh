@@ -1,9 +1,9 @@
 package org.lojoso.sudie.mesh.center.kernel.server.analysis.registry;
 
 import org.lojoso.sudie.mesh.center.kernel.server.analysis.Analysis;
-import org.lojoso.sudie.mesh.center.kernel.server.analysis.request.RequestModel;
-import org.lojoso.sudie.mesh.common.decode.utils.DgTools;
+import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.Dg;
+import org.lojoso.sudie.mesh.common.model.analysis.registry.RegistryModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +22,7 @@ public class RegistryAnalysis implements Analysis<RegistryModel> {
 
     private RegistryModel buildClass(byte[] data, RegistryModel model){
         if(data.length > 0){
-            int clength = DgTools.toShort(Arrays.copyOfRange(data, 0, 2));
+            int clength = CommonMethod.toShort(Arrays.copyOfRange(data, 0, 2));
             model.addClassName(new String(Arrays.copyOfRange(data, 2 , 2 + clength)));
             return buildClass(Arrays.copyOfRange(data, 2 + clength, data.length), model);
         }else {
