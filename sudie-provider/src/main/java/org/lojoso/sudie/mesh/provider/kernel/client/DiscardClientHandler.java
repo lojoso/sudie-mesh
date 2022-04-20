@@ -21,7 +21,7 @@ import static io.netty.handler.timeout.IdleState.WRITER_IDLE;
 public class DiscardClientHandler extends ChannelInboundHandlerAdapter {
 
     private String server;
-    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     private Class<?>[] classes;
     private ProviderRegistryEncoder encoder;

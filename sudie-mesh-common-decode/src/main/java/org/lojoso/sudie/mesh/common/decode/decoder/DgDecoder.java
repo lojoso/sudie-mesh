@@ -14,13 +14,25 @@ public class DgDecoder extends ByteToMessageDecoder {
 
 //    private final BrokenDgPool brokens = new DecoderBrokenPool();
 
+    private Class<? extends ChainDecoder> decoderClass;
+
     private ChainDecoder getChainService(){
-        Iterator<ChainDecoder> iterable = ServiceLoader.load(ChainDecoder.class).iterator();
-        ChainDecoder next = null;
-        while (iterable.hasNext()){
-            next = iterable.next();
-        }
-        return next;
+        return Optional.ofNullable(decoderClass).map(clazz -> {
+            Iterator<? extends ChainDecoder> iterable = ServiceLoader.load(this.decoderClass).iterator();
+            ChainDecoder next = null;
+            while (iterable.hasNext()){
+                next = (ChainDecoder) iterable.next();
+            }
+            return next;
+        }).orElse(null);
+    }
+
+    public DgDecoder(){
+
+    }
+
+    public DgDecoder(Class<? extends ChainDecoder> decoderClass){
+        this.decoderClass = decoderClass;
     }
 
     public void pubDecode(byte[] bytes){
@@ -64,4 +76,11 @@ public class DgDecoder extends ByteToMessageDecoder {
     }
 
 
+    public Class<?> getDecoderClass() {
+        return decoderClass;
+    }
+
+    public void setDecoderClass(Class<? extends ChainDecoder> decoderClass) {
+        this.decoderClass = decoderClass;
+    }
 }

@@ -1,6 +1,6 @@
 package org.lojoso.sudie.mesh.consumer.kernel.decoder;
 
-import org.lojoso.sudie.mesh.common.decode.decoder.ChainDecoder;
+import org.lojoso.sudie.mesh.common.decode.decoder.ResChainDecoder;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.CommonState;
 import org.lojoso.sudie.mesh.common.model.Dg;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static org.lojoso.sudie.mesh.common.config.CommonData.CD_AFN_RES;
 
-public class ResponseDecoder implements ChainDecoder {
+public class ResponseDecoder implements ResChainDecoder {
 
 
     @Override

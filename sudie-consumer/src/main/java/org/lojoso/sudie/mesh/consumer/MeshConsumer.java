@@ -16,11 +16,13 @@ public class MeshConsumer {
 
     public static void main(String[] args) throws InterruptedException {
         ConsumerClient.startCluster(FlagArgs.getValue(args, "-s", "localhost:60001"));
-        try {
-            System.out.println(ConsumerProxy.getProxy(TestService.class).sayHello("我", String.valueOf(Math.random())));
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+//        try {
+//            System.out.println(ConsumerProxy.getProxy(TestService.class).sayHello("我", String.valueOf(Math.random())));
+//        }catch (Exception ex){
+//            ex.printStackTrace();
+//        }
+
+        ConsumerProxy.getProxy(TestService.class).sayHello(new TUser());
 
 //        Executors.newScheduledThreadPool(5).scheduleWithFixedDelay(() -> {
 //            try {
@@ -30,13 +32,13 @@ public class MeshConsumer {
 //            }
 //        }, 1, 100, TimeUnit.MILLISECONDS);
 //
-        Executors.newScheduledThreadPool(5).scheduleWithFixedDelay(() -> {
-            try {
-                System.out.println(ConsumerProxy.getProxy(TestService.class).userSayHello("我"+ Math.random(), Cluster.seq.get()));
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }
-        }, 1, 10, TimeUnit.MILLISECONDS);
+//        Executors.newScheduledThreadPool(5).scheduleWithFixedDelay(() -> {
+//            try {
+//                System.out.println(ConsumerProxy.getProxy(TestService.class).userSayHello("我"+ Math.random(), Cluster.seq.get()));
+//            }catch (Exception ex){
+//                ex.printStackTrace();
+//            }
+//        }, 1, 10, TimeUnit.MILLISECONDS);
         LockSupport.park();
 
     }

@@ -15,7 +15,7 @@ public class ProviderResponseEncoder {
     public <T> byte[] encode(CommonState state, short channelId, T result, int seq, String exception){
 
         return Optional.of(state).filter(s -> Objects.equals(state, CommonState.SUCCESS_NO_RES)).map(s -> {
-            ByteBuffer buffer = ByteBuffer.allocate(1 + 2 + 2 + 1);
+            ByteBuffer buffer = ByteBuffer.allocate(1 + 2 + 2 + 4 + 1);
             ByteBuffer body = ByteBuffer.allocate(7);
             body.putShort(channelId);
             body.putInt(seq);
@@ -29,7 +29,7 @@ public class ProviderResponseEncoder {
             // 带有结构体 （head + afn + length + crc + channelId + state + body_length + body）
             byte[] res = Optional.ofNullable(exception).map(ex -> ex.getBytes(StandardCharsets.UTF_8))
                     .orElseGet(() -> FastSerialization.getFstConfig(result.getClass()).get().asByteArray(result));
-            int bodyTotal = 4 + 2 + 1 + 2 + res.length;
+            int bodyTotal = 2 + 4 + 1 + 2 + res.length;
             ByteBuffer buffer = ByteBuffer.allocate(1 + 2 + bodyTotal);
             ByteBuffer bodyBuffer = ByteBuffer.allocate(bodyTotal);
             bodyBuffer.putShort(channelId);

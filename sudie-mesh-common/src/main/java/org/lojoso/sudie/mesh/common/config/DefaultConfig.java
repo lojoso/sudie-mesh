@@ -17,4 +17,6 @@ public interface DefaultConfig {
     // ConsumerTimeOut 配置
     int CONSUMER_TIMEOUT_SECONDS = 5;
 
+    int CLIENT_N_THREADS = 2;
+
 }

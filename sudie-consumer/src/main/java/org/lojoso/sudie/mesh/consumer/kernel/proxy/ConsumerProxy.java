@@ -34,7 +34,7 @@ public class ConsumerProxy {
                 ResponseModel model = ClusterCache.waiting(seq, method.getReturnType());
                 return Optional.ofNullable(model).map(ResponseModel::getState).map(s -> {
                     if(Objects.equals(s, CommonState.SUCCESS_NO_RES)){
-                        return null;
+                        return Void.TYPE;
                     }else if(Objects.equals(s, CommonState.EXCEPTION)){
                         throw new RuntimeException(model.getExpection());
                     }else {

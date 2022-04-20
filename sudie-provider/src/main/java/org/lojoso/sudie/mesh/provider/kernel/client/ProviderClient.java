@@ -12,6 +12,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.lojoso.sudie.mesh.common.config.DefaultConfig;
 import org.lojoso.sudie.mesh.common.decode.decoder.DgDecoder;
+import org.lojoso.sudie.mesh.common.decode.decoder.ReqChainDecoder;
 
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
 public class ProviderClient {
 
     private static final Bootstrap bootstrap = new Bootstrap();
-    private static final NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+    private static final NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup(DefaultConfig.CLIENT_N_THREADS);
 
     static {
         bootstrap.group(eventLoopGroup)
@@ -31,7 +32,7 @@ public class ProviderClient {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         // 5s 无写操作-开始心跳
                         ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(DefaultConfig.LENBASED_DE_MAX_LEN,DefaultConfig.LENBASED_DE_OFFSET,DefaultConfig.LENBASED_DE_LEN,DefaultConfig.LENBASED_DE_LEN_ADJUST,0))
-                                .addLast(new DgDecoder()).addLast(new IdleStateHandler(0, DefaultConfig.CLIENT_HB_SECONDS, 0, TimeUnit.SECONDS))
+                                .addLast(new DgDecoder(ReqChainDecoder.class)).addLast(new IdleStateHandler(0, DefaultConfig.CLIENT_HB_SECONDS, 0, TimeUnit.SECONDS))
                                 .addLast(new DiscardClientHandler());
                     }
                 });
