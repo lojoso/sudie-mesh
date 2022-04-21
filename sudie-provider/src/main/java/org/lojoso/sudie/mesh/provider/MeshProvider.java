@@ -14,7 +14,7 @@ public class MeshProvider {
 
     public static void main(String[] args) throws InterruptedException {
         ClusterCache.serviceMapping.put(TestService.class.getName(), new MyService());
-        ProviderClient.startCluster("localhost:60001,localhost:60002", MyService.class);
+        ProviderClient.startCluster("localhost:60001,localhost:60002", TestService.class);
         LockSupport.park();
     }
 

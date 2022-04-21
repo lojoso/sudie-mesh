@@ -14,7 +14,8 @@ public class ProviderRegistryEncoder {
 
     public byte[] encode(Class<?>... classes) {
         int total = 0;
-        List<Class<?>> result = findAllService(classes);
+//        List<Class<?>> result = findAllService(classes);
+        List<Class<?>> result = Arrays.asList(classes);
         byte[][] byteClass = new byte[result.size()][];
 
         for (int i = 0; i < result.size();i++){
