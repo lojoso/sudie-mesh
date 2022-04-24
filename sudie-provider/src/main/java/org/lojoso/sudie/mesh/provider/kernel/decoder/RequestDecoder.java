@@ -1,7 +1,7 @@
 package org.lojoso.sudie.mesh.provider.kernel.decoder;
 
 import org.lojoso.sudie.mesh.common.config.NativeClassMapping;
-import org.lojoso.sudie.mesh.common.decode.decoder.ReqChainDecoder;
+import org.lojoso.sudie.mesh.common.decode.decoder.ChainDecoder;
 import org.lojoso.sudie.mesh.common.encode.config.FastSerialization;
 import org.lojoso.sudie.mesh.common.model.CommonMethod;
 import org.lojoso.sudie.mesh.common.model.Dg;
@@ -18,8 +18,13 @@ import java.util.stream.IntStream;
 
 import static org.lojoso.sudie.mesh.common.config.CommonData.CD_AFN;
 
-public class RequestDecoder implements ReqChainDecoder {
+public class RequestDecoder implements ChainDecoder {
 
+
+    @Override
+    public ChainDecoder selected(DecoderType type) {
+        return Objects.equals(type, DecoderType.REQ) ? this : null;
+    }
 
     @Override
     public List<? extends Dg> chainDecoder(List<Dg> data) {

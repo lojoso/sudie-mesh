@@ -12,30 +12,29 @@ import java.util.*;
 
 public class DgDecoder extends ByteToMessageDecoder {
 
-//    private final BrokenDgPool brokens = new DecoderBrokenPool();
+    private ChainDecoder.DecoderType type;
 
-    private Class<? extends ChainDecoder> decoderClass;
-
-    private ChainDecoder getChainService(){
-        return Optional.ofNullable(decoderClass).map(clazz -> {
-            Iterator<? extends ChainDecoder> iterable = ServiceLoader.load(this.decoderClass).iterator();
-            ChainDecoder next = null;
-            while (iterable.hasNext()){
-                next = (ChainDecoder) iterable.next();
+    private ChainDecoder getChainService() {
+        Iterator<? extends ChainDecoder> iterable = ServiceLoader.load(ChainDecoder.class).iterator();
+        ChainDecoder next = null;
+        while (iterable.hasNext()) {
+            next = (ChainDecoder) iterable.next().selected(this.type);
+            if(Objects.nonNull(next)){
+                break;
             }
-            return next;
-        }).orElse(null);
+        }
+        return next;
     }
 
-    public DgDecoder(){
+    public DgDecoder() {
 
     }
 
-    public DgDecoder(Class<? extends ChainDecoder> decoderClass){
-        this.decoderClass = decoderClass;
+    public DgDecoder(ChainDecoder.DecoderType type) {
+        this.type = type;
     }
 
-    public void pubDecode(byte[] bytes){
+    public void pubDecode(byte[] bytes) {
         this.analysis(bytes, null, new ArrayList<>());
     }
 
@@ -63,7 +62,7 @@ public class DgDecoder extends ByteToMessageDecoder {
 
 
     // 正常判断
-    private void normalDatagram(byte[] payload, List<Dg> result, ChannelId id){
+    private void normalDatagram(byte[] payload, List<Dg> result, ChannelId id) {
 
         // 1 == AFN.length
         byte[] afn = Arrays.copyOfRange(payload, 0, 1);
@@ -76,11 +75,11 @@ public class DgDecoder extends ByteToMessageDecoder {
     }
 
 
-    public Class<?> getDecoderClass() {
-        return decoderClass;
+    public ChainDecoder.DecoderType getType() {
+        return type;
     }
 
-    public void setDecoderClass(Class<? extends ChainDecoder> decoderClass) {
-        this.decoderClass = decoderClass;
+    public void setType(ChainDecoder.DecoderType type) {
+        this.type = type;
     }
 }
